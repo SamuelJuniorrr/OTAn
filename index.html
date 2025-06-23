@@ -3,29 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Torneio OTAn - Chaveamento VS</title>
+  <title>Torneio VS - OTAn</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1><span class="highlight">Torneio VS</span> - Ranking OTAn</h1>
+    <h1><span class="highlight">Torneio VS</span> - OTAn</h1>
 
-    <section id="ranking-container">
+    <section id="input-container">
+      <h2>🔧 Insira o Ranking Inicial</h2>
+      <form id="ranking-form">
+        <div id="ranking-inputs"></div>
+        <button type="submit">Iniciar Torneio</button>
+      </form>
+    </section>
+
+    <section id="ranking-container" class="hidden">
       <h2>🏆 Ranking Atual</h2>
       <ol id="ranking-list" class="ranking-list"></ol>
     </section>
 
-    <section id="semana-info">
+    <section id="semana-info" class="hidden">
       <h2 id="semana-title">🗓 Semana 1</h2>
     </section>
 
-    <section id="confrontos"></section>
+    <section id="confrontos" class="hidden"></section>
 
-    <button id="proxima-semana" onclick="proximaSemana()">➡ Próxima Semana</button>
+    <section id="simulacao-container" class="hidden">
+      <h2>🔮 Simulação de Ranking da Próxima Semana</h2>
+      <ol id="ranking-previsto"></ol>
+      <button onclick="confirmarSemana()">✅ Confirmar Semana</button>
+    </section>
 
-    <section id="historico-container">
+    <button id="verificar-ranking" class="hidden" onclick="simularRanking()">➡ Ver Previsão</button>
+
+    <section id="historico-container" class="hidden">
       <h2>📜 Histórico de Vitórias</h2>
       <div id="historico"></div>
+    </section>
+
+    <section id="grafico-container" class="hidden">
+      <h2>📈 Trajetória da OTAn</h2>
+      <canvas id="grafico-otan" height="200"></canvas>
     </section>
   </div>
 
