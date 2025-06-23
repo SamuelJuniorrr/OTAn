@@ -1,36 +1,36 @@
-/* Reset e fonte base */
+/* Reset básico */
 * {
   box-sizing: border-box;
   margin: 0; padding: 0;
 }
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+  color: #eee;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  padding: 2rem 1rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
 }
 
-/* Container centralizado */
+/* Container principal */
 .container {
   max-width: 900px;
   width: 100%;
-  background: #222;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 150, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
 }
 
-/* Título principal */
-h1 {
+/* Header */
+header h1 {
   font-weight: 700;
-  font-size: 2.8rem;
+  font-size: 3rem;
   color: #00caff;
-  margin-bottom: 1rem;
   text-align: center;
-  text-shadow: 0 0 8px #00caff;
+  text-shadow: 0 0 12px #00caff;
+  margin-bottom: 1.5rem;
 }
 
 /* Destaque OTAn */
@@ -39,196 +39,205 @@ h1 {
   text-shadow: 0 0 10px #ffd700;
 }
 
-/* Sessões */
-section {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: #2b2b2b;
+/* Cards padrão */
+.card {
+  background: #222;
+  padding: 1.8rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0, 202, 255, 0.25);
+}
+
+/* Inputs do ranking inicial em grid */
+.grid-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.grid-inputs input {
+  padding: 0.65rem 1rem;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 202, 255, 0.15);
-}
-
-/* Formularios e inputs */
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-}
-
-#ranking-inputs input {
-  flex: 1 1 150px;
-  padding: 0.7rem 1rem;
-  font-size: 1rem;
-  border-radius: 8px;
   border: none;
   background: #333;
-  color: #e0e0e0;
-  box-shadow: inset 0 0 5px rgba(0, 202, 255, 0.5);
-  transition: background-color 0.3s;
+  color: #eee;
+  font-size: 1.05rem;
+  box-shadow: inset 0 0 6px rgba(0, 202, 255, 0.5);
+  transition: background-color 0.3s ease;
 }
 
-#ranking-inputs input:focus {
-  background-color: #111;
+.grid-inputs input::placeholder {
+  color: #666;
+}
+
+.grid-inputs input:focus {
+  background: #0c0c0c;
   outline: none;
-  box-shadow: 0 0 10px #00caff;
+  box-shadow: 0 0 12px #00caff;
 }
 
-/* Botões */
-button {
-  cursor: pointer;
+/* Botões primários */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 0;
+  border-radius: 10px;
   border: none;
-  padding: 0.7rem 1.6rem;
-  font-weight: 600;
-  border-radius: 8px;
-  background: #00caff;
+  font-weight: 700;
+  font-size: 1.2rem;
   color: #111;
-  box-shadow: 0 0 8px #00caff;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin-top: 1rem;
+  background: #00caff;
+  box-shadow: 0 0 15px #00caff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
+.btn-primary:hover {
   background: #0099cc;
   color: #fff;
 }
 
-/* Ranking atual */
+/* Ranking - lista */
 .ranking-list {
   list-style: decimal inside;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   max-width: 350px;
-  margin: auto;
+  margin: 0 auto;
+  padding-left: 0;
 }
 
 .ranking-list li {
-  padding: 6px 12px;
-  border-radius: 6px;
-  margin: 6px 0;
   background: #111;
+  margin-bottom: 0.7rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 202, 255, 0.15);
+  font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 500;
-  color: #e0e0e0;
-  box-shadow: 0 0 8px rgba(0, 202, 255, 0.2);
+  color: #eee;
+  transition: all 0.3s ease;
 }
 
-/* Destaque OTAn */
 .ranking-list li.otan {
+  background: #3a3000;
   color: #ffd700;
+  box-shadow: 0 0 14px #ffd700;
   font-weight: 700;
-  text-shadow: 0 0 6px #ffd700;
-  background: #222214;
 }
 
-/* Setas de subida/descida */
+/* Setas subida/descida */
 .ranking-list li.subiu::after {
   content: '⬆️';
-  color: #00ff00;
   margin-left: 10px;
+  color: #0f0;
 }
 .ranking-list li.desceu::after {
   content: '⬇️';
-  color: #ff4444;
   margin-left: 10px;
+  color: #f00;
 }
 
-/* Confrontos */
-.confronto {
+/* Grid dos confrontos (cards) */
+.confrontos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  gap: 1.4rem;
+}
+
+/* Card individual de confronto */
+.card-confronto {
+  background: #111;
+  border-radius: 14px;
+  padding: 1.3rem 1.8rem;
+  box-shadow: 0 0 18px rgba(0, 202, 255, 0.3);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   gap: 1rem;
-  margin: 1rem 0;
+  user-select: none;
+  transition: box-shadow 0.3s ease;
 }
 
-.confronto button {
-  flex: 1 1 45%;
-  background: #222;
-  color: #ccc;
-  font-size: 1.1rem;
-  font-weight: 600;
-  box-shadow: 0 0 5px rgba(0, 202, 255, 0.2);
-  transition: background-color 0.3s ease;
+.card-confronto:hover {
+  box-shadow: 0 0 30px #00caff;
+}
+
+/* Nomes das alianças no card */
+.alianca-nome {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #ddd;
+  text-align: center;
+  padding: 0.3rem 0;
+  border-radius: 8px;
+  cursor: pointer;
   border: 2px solid transparent;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.confronto button:hover {
-  background-color: #00caff;
-  color: #111;
-  box-shadow: 0 0 15px #00caff;
+.alianca-nome.otan {
+  background: #ffd700;
+  color: #222;
+  font-weight: 900;
+  box-shadow: 0 0 20px #ffd700;
+  border-color: #ffd700;
 }
 
-.confronto button.selected {
-  background-color: #00caff;
+.alianca-nome:hover {
+  background: #00caff;
   color: #111;
-  box-shadow: 0 0 15px #00caff;
   border-color: #00caff;
 }
 
-/* Destaque OTAn nos botões do confronto */
-.confronto button.otan {
-  background-color: #ffd700;
+.alianca-nome.selected {
+  background: #00caff;
   color: #111;
+  box-shadow: 0 0 25px #00caff;
+  border-color: #00caff;
+}
+
+/* Título das seções */
+h2 {
   font-weight: 700;
-  box-shadow: 0 0 15px #ffd700;
-  border-color: #ffd700;
-}
-
-.confronto button.otan.selected {
-  background-color: #fff;
-  color: #222;
-  box-shadow: 0 0 25px #ffd700;
-  border-color: #ffd700;
-}
-
-/* Simulação ranking */
-#simulacao-container ol {
-  max-width: 350px;
-  margin: auto;
-  font-size: 1.1rem;
-  list-style: decimal inside;
-}
-
-#simulacao-container li.otan {
-  color: #ffd700;
-  font-weight: 700;
-  text-shadow: 0 0 6px #ffd700;
-}
-
-#simulacao-container li.subiu::after {
-  content: '⬆️';
-  color: #00ff00;
-  margin-left: 10px;
-}
-#simulacao-container li.desceu::after {
-  content: '⬇️';
-  color: #ff4444;
-  margin-left: 10px;
+  font-size: 1.9rem;
+  margin-bottom: 1rem;
+  color: #00caff;
+  text-shadow: 0 0 10px #00caff;
+  text-align: center;
 }
 
 /* Histórico */
-#historico-container div {
+#historico-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 0 0.5rem;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: #ddd;
+  user-select: text;
+}
+
+#historico-list div {
   margin-bottom: 1rem;
-  background: #111;
+  background: #222;
   padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0, 202, 255, 0.1);
-  font-size: 0.95rem;
-  line-height: 1.4;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 202, 255, 0.15);
 }
 
 /* Gráfico */
-#grafico-container {
-  max-width: 700px;
-  margin: 2rem auto 1rem;
-  background: #222;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 202, 255, 0.3);
+#grafico-otan-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 0.6rem;
 }
 
-/* Utilities */
-.hidden {
-  display: none;
+@media (max-width: 480px) {
+  .grid-inputs {
+    grid-template-columns: repeat(auto-fit,minmax(110px,1fr));
+  }
+  .confrontos-grid {
+    grid-template-columns: 1fr;
+  }
 }
