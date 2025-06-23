@@ -498,3 +498,20 @@ body {
 .hidden-module {
     display: none;
 }
+
+/* Estilo para o botão da aliança vencedora */
+.match button.selected-winner {
+    background: var(--winner-color); /* Uma cor verde vibrante, por exemplo */
+    color: var(--bg-dark); /* Cor do texto para contraste */
+    border-color: var(--winner-color); /* Borda da mesma cor */
+    font-weight: 700; /* Texto mais negrito */
+    box-shadow: 0 0 10px rgba(0, 230, 118, 0.6); /* Sombra para dar destaque */
+    transform: scale(1.02); /* Leve aumento para indicar seleção */
+    transition: all 0.2s ease-out; /* Transição suave */
+}
+
+/* Opcional: Escurecer o botão do perdedor (se o outro lado não for o vencedor) */
+.match button:not(.selected-winner)[disabled] {
+    opacity: 0.6; /* Deixa o botão do perdedor um pouco transparente */
+    filter: grayscale(50%); /* Opcional: tira um pouco da cor */
+}
