@@ -494,7 +494,7 @@ body {
     color: var(--trophy-bronze);
 }
 
-/* Para esconder módulos de semanas que não são a semana atual */
-.flow-module.hidden-week {
+/* Para ocultar módulos inteiros, como o Rank Final, até que sejam revelados */
+.hidden-module {
     display: none;
 }
