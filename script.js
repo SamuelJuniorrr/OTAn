@@ -5,9 +5,8 @@ const confrontosSection = document.getElementById("confrontos-section");
 const rankingSection = document.getElementById("ranking-section");
 
 let ranking = [];
-let semana = 1;
 
-// Gera inputs para inserir os 16 nomes
+// Cria 16 campos de entrada
 for (let i = 1; i <= 16; i++) {
   const input = document.createElement("input");
   input.placeholder = `Posição ${i}`;
