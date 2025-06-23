@@ -1,231 +1,214 @@
+// Dados das alianças - Adicione o 'world'
+const aliancas = [
+    { nome: "OTAN1", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "OTAN2", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "OTAN3", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "OTAN4", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "OTAN5", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "OTAN6", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "OTAN7", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "OTAN8", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "OTAN9", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "OTAN10", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "OTAN11", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "OTAN12", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "OTAN13", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "OTAN14", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "OTAN15", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "OTAN16", vit: 0, der: 0, pts: 0, world: "#104" },
+];
+
+let duelosRealizados = {};
+let semanas = 4;
+// Aumentado o número de duelos por semana. Com 16 alianças,
+// podemos ter no máximo 8 duelos por semana (16 alianças / 2 por duelo).
+// Se você quiser que todas as alianças joguem toda semana, defina para 8.
+let duelosPorSemana = 8; // Aumentado para 8 para incluir mais grupos/duelos
+
 document.addEventListener('DOMContentLoaded', () => {
-    // ## Configuração das Alianças (Ordem é o Ranking Inicial Fixo)
-    // A ordem aqui define o ranking inicial para a Semana 1
-    let alliances = [
-        "Aliança Alpha", "Aliança Beta", "Aliança Gamma", "Aliança Delta",
-        "Aliança Epsilon", "Aliança Zeta", "Aliança Eta", "Aliança Theta",
-        "Aliança Iota", "Aliança Kappa", "Aliança Lambda", "Aliança Mu",
-        "Aliança Nu", "Aliança Xi", "Aliança Omicron", "Aliança Pi"
-    ];
-
-    // Estrutura para armazenar o estado de cada aliança
-    // { name: "Aliança X", initialRank: 1, wins: 0, losses: 0, currentRank: 1 }
-    let allianceData = alliances.map((name, index) => ({
-        name: name,
-        initialRank: index + 1, // Posição inicial fixa
-        wins: 0,
-        losses: 0,
-        currentRank: index + 1 // Ranking atual, atualizado semanalmente
-    }));
-
-    let currentWeek = 1;
-    let weekMatches = {}; // Armazena os duelos de cada semana
-    let winnersByWeek = {}; // Armazena os vencedores de cada duelo para cada semana
-
-    const totalWeeks = 4;
-
-    // --- Funções Auxiliares ---
-
-    // Função para criar duelos com base no ranking atual das alianças
-    function createMatchesBasedOnRank(alliancesRanked) {
-        const matches = [];
-        // Ordena as alianças pelo ranking atual
-        alliancesRanked.sort((a, b) => a.currentRank - b.currentRank);
-
-        for (let i = 0; i < alliancesRanked.length; i += 2) {
-            // Duels: 1st vs 2nd, 3rd vs 4th, etc.
-            matches.push([alliancesRanked[i].name, alliancesRanked[i + 1].name]);
-        }
-        return matches;
-    }
-
-    // Função para exibir os duelos em uma semana específica
-    function displayMatches(weekNumber, matches) {
-        const weekDiv = document.getElementById(`week-${weekNumber}`);
-        const matchesContainer = weekDiv.querySelector('.matches');
-        matchesContainer.innerHTML = ''; // Limpa os duelos anteriores
-
-        matches.forEach((match, index) => {
-            const [alliance1, alliance2] = match;
-            const matchDiv = document.createElement('div');
-            matchDiv.classList.add('match');
-            matchDiv.setAttribute('data-match-id', `week${weekNumber}-match${index}`);
-
-            matchDiv.innerHTML = `
-                <p>${alliance1} vs ${alliance2}</p>
-                <button data-winner="${alliance1}">${alliance1}</button>
-                <button data-winner="${alliance2}">${alliance2}</button>
-            `;
-            matchesContainer.appendChild(matchDiv);
-
-            // Adiciona event listeners aos botões de vencedor
-            matchDiv.querySelectorAll('button').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    handleWinnerSelection(event, weekNumber, index);
-                });
-            });
-        });
-
-        // Habilita os botões da semana atual e desabilita as anteriores/futuras
-        updateButtonStates(weekNumber);
-    }
-
-    // Função para lidar com a seleção do vencedor
-    function handleWinnerSelection(event, weekNumber, matchIndex) {
-        const selectedButton = event.target;
-        const winnerName = selectedButton.dataset.winner;
-        const matchDiv = selectedButton.closest('.match');
-
-        // Determina o perdedor
-        const opponentButton = Array.from(matchDiv.querySelectorAll('button')).find(
-            btn => btn !== selectedButton
-        );
-        const loserName = opponentButton.dataset.winner;
-
-        // Desseleciona qualquer botão que já tenha sido selecionado neste confronto
-        matchDiv.querySelectorAll('button').forEach(button => {
-            button.classList.remove('selected-winner');
-            button.disabled = true; // Desabilita todos os botões do duelo após a seleção
-        });
-
-        // Marca o botão do vencedor
-        selectedButton.classList.add('selected-winner');
-
-        // Armazena o vencedor para esta semana e confronto
-        if (!winnersByWeek[weekNumber]) {
-            winnersByWeek[weekNumber] = {};
-        }
-        winnersByWeek[weekNumber][matchIndex] = winnerName;
-
-        // Atualiza as vitórias/derrotas das alianças
-        updateAllianceStats(winnerName, loserName);
-
-        // Verifica se todos os duelos da semana foram decididos para avançar
-        const allMatchesDecided = weekMatches[weekNumber].every((_, i) => winnersByWeek[weekNumber][i]);
-        if (allMatchesDecided) {
-            progressToNextWeek();
-        }
-    }
-
-    // Função para atualizar as estatísticas de vitórias/derrotas de uma aliança
-    function updateAllianceStats(winnerName, loserName) {
-        const winnerAlliance = allianceData.find(a => a.name === winnerName);
-        const loserAlliance = allianceData.find(a => a.name === loserName);
-
-        if (winnerAlliance) {
-            winnerAlliance.wins++;
-        }
-        if (loserAlliance) {
-            loserAlliance.losses++;
-        }
-        // console.log("Stats updated:", allianceData);
-    }
-
-    // Função para atualizar o estado dos botões (habilitar/desabilitar)
-    function updateButtonStates(activeWeek) {
-        document.querySelectorAll('.week').forEach(weekDiv => {
-            const weekNumber = parseInt(weekDiv.id.replace('week-', ''));
-            const buttons = weekDiv.querySelectorAll('.match button');
-
-            buttons.forEach(button => {
-                const matchId = button.closest('.match').dataset.matchId;
-                const matchIndex = parseInt(matchId.split('match')[1]);
-
-                if (weekNumber === activeWeek) {
-                    // Habilita se ainda não houver vencedor para este duelo
-                    if (!winnersByWeek[weekNumber] || !winnersByWeek[weekNumber][matchIndex]) {
-                        button.disabled = false;
-                    } else {
-                        // Se já houver vencedor, desabilita e marca o vencedor
-                        button.disabled = true;
-                        if (button.dataset.winner === winnersByWeek[weekNumber][matchIndex]) {
-                            button.classList.add('selected-winner');
-                        }
-                    }
-                } else {
-                    button.disabled = true; // Desabilita botões de semanas passadas/futuras
-                }
-            });
-        });
-    }
-
-    // Função para calcular o ranking da próxima semana e seus confrontos
-    function calculateNextWeekMatchesAndRank() {
-        // Lógica de ranking: Pode ser por vitórias, depois por diferença de vitórias/derrotas,
-        // e depois pelo rank inicial se houver empate.
-        allianceData.sort((a, b) => {
-            // 1. Mais vitórias primeiro
-            if (b.wins !== a.wins) {
-                return b.wins - a.wins;
-            }
-            // 2. Menos derrotas depois (ou maior diferença wins - losses)
-            const diffA = a.wins - a.losses;
-            const diffB = b.wins - b.losses;
-            if (diffB !== diffA) {
-                return diffB - diffA;
-            }
-            // 3. Critério de desempate final: ranking inicial
-            return a.initialRank - b.initialRank;
-        });
-
-        // Atualiza o currentRank de cada aliança com base na nova ordem
-        allianceData.forEach((alliance, index) => {
-            alliance.currentRank = index + 1;
-        });
-
-        // Agora, crie os novos duelos com base no currentRank atualizado
-        return createMatchesBasedOnRank(allianceData);
-    }
-
-    // Função para progredir para a próxima semana
-    function progressToNextWeek() {
-        if (currentWeek < totalWeeks) {
-            currentWeek++;
-            weekMatches[currentWeek] = calculateNextWeekMatchesAndRank();
-            displayMatches(currentWeek, weekMatches[currentWeek]);
-            document.getElementById(`week-${currentWeek}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else if (currentWeek === totalWeeks) {
-            // Fim do torneio, gerar classificação final
-            generateFinalRanking();
-        }
-    }
-
-    // Função para gerar a classificação final
-    function generateFinalRanking() {
-        // O ranking final é simplesmente o ranking atual das alianças após a última semana
-        // recalculamos o ranking uma última vez para garantir a ordem final
-        allianceData.sort((a, b) => {
-            if (b.wins !== a.wins) {
-                return b.wins - a.wins;
-            }
-            const diffA = a.wins - a.losses;
-            const diffB = b.wins - b.losses;
-            if (diffB !== diffA) {
-                return diffB - diffA;
-            }
-            return a.initialRank - b.initialRank;
-        });
-
-        const finalRankingList = document.getElementById('ranking-list');
-        finalRankingList.innerHTML = ''; // Limpa a lista anterior
-
-        allianceData.forEach((alliance, index) => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${index + 1}º Lugar: ${alliance.name} (V: ${alliance.wins}, D: ${alliance.losses})`;
-            finalRankingList.appendChild(listItem);
-        });
-
-        document.getElementById('final-ranking').style.display = 'block';
-        document.getElementById('final-ranking').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    // --- Inicialização do Torneio ---
-
-    function initializeTournament() {
-        // Semana 1: Duelos fixos baseados no rank inicial (1º vs 2º, 3º vs 4º, etc.)
-        weekMatches[1] = createMatchesBasedOnRank(allianceData);
-        displayMatches(1, weekMatches[1]);
-    }
-
-    initializeTournament();
+    gerarDuelos();
+    atualizarRanking();
 });
+
+function gerarDuelos() {
+    // Para garantir que duelos não se repitam em uma semana
+    // E que cada aliança jogue apenas uma vez por semana
+    // Resetar aliancasParaEstaSemana a cada nova semana
+    let aliancasParaEstaSemana = [...aliancas]; 
+    const duelosGeradosGlobal = {}; // Para controlar duelos que já aconteceram entre quaisquer duas alianças ao longo das semanas
+
+    for (let s = 1; s <= semanas; s++) {
+        const weekContainer = document.getElementById(`week-${s}`).querySelector('.matches');
+        weekContainer.innerHTML = ''; // Limpa duelos anteriores
+
+        let aliancasDisponiveisParaDuelo = [...aliancasParaEstaSemana]; // Copia para uso nesta semana
+        let duelosSemanaAtual = 0;
+        let aliancasJaDuelaramNestaSemana = new Set(); // Para garantir que uma aliança só duele uma vez por semana
+
+        while (duelosSemanaAtual < duelosPorSemana && aliancasDisponiveisParaDuelo.length >= 2) {
+            let alianca1, alianca2;
+            let idx1, idx2;
+            let tentativaSegura = 0;
+            const maxTentativas = 100; // Limite para evitar loop infinito em cenários complexos
+
+            do {
+                // Tenta selecionar a primeira aliança que ainda não duelou nesta semana
+                idx1 = Math.floor(Math.random() * aliancasDisponiveisParaDuelo.length);
+                alianca1 = aliancasDisponiveisParaDuelo[idx1];
+                tentativaSegura++;
+            } while (aliancasJaDuelaramNestaSemana.has(alianca1.nome) && tentativaSegura < maxTentativas);
+
+            if (tentativaSegura >= maxTentativas) {
+                console.warn(`Não foi possível encontrar uma primeira aliança disponível para o duelo na semana ${s}.`);
+                break; // Sai do loop se não conseguir encontrar uma aliança válida
+            }
+
+            // Remove alianca1 da lista disponível para evitar que ela seja selecionada como alianca2
+            aliancasDisponiveisParaDuelo.splice(idx1, 1);
+
+            tentativaSegura = 0; // Resetar para a segunda aliança
+            do {
+                // Tenta selecionar a segunda aliança que ainda não duelou nesta semana
+                idx2 = Math.floor(Math.random() * aliancasDisponiveisParaDuelo.length);
+                alianca2 = aliancasDisponiveisParaDuelo[idx2];
+                tentativaSegura++;
+            } while (aliancasJaDuelaramNestaSemana.has(alianca2.nome) && tentativaSegura < maxTentativas);
+            
+            if (tentativaSegura >= maxTentativas) {
+                console.warn(`Não foi possível encontrar uma segunda aliança disponível para o duelo na semana ${s}.`);
+                // Recoloca alianca1 se alianca2 não for encontrada
+                aliancasDisponiveisParaDuelo.push(alianca1);  // Recoloca alianca1
+                break; // Sai do loop
+            }
+
+            // Cria uma chave única para o duelo (ordem não importa)
+            const dueloKey = [alianca1.nome, alianca2.nome].sort().join('-');
+
+            // Verifica se o duelo já foi gerado globalmente
+            if (!duelosGeradosGlobal[dueloKey] && alianca1.nome !== alianca2.nome) {
+                duelosGeradosGlobal[dueloKey] = true;
+                const matchElement = criarElementoDuelo(s, alianca1, alianca2);
+                weekContainer.appendChild(matchElement);
+                duelosSemanaAtual++;
+                
+                // Marca as alianças como dueladas nesta semana
+                aliancasJaDuelaramNestaSemana.add(alianca1.nome);
+                aliancasJaDuelaramNestaSemana.add(alianca2.nome);
+
+                // Remove as alianças da lista disponível para esta semana
+                // (alianca1 já foi removida, agora remove alianca2)
+                aliancasDisponiveisParaDuelo.splice(idx2, 1);
+
+            } else {
+                // Se o duelo já existe ou alianças são as mesmas, recoloca-as e tenta novamente
+                // Como já removemos alianca1, precisamos recolocá-la aqui
+                aliancasDisponiveisParaDuelo.push(alianca1, alianca2); // Recoloca ambas
+            }
+        }
+        // Ao final de cada semana, aliancasDisponiveisParaDuelo terá as alianças que não duelaram
+        // ou as que foram recolocadas.
+        // Para a próxima semana, queremos que todas as alianças estejam disponíveis novamente.
+        aliancasParaEstaSemana = [...aliancas]; // Reseta para a próxima semana
+    }
+}
+
+function criarElementoDuelo(semana, alianca1, alianca2) {
+    const matchDiv = document.createElement('div');
+    matchDiv.classList.add('match');
+    matchDiv.innerHTML = `
+        <p>${alianca1.nome} vs ${alianca2.nome}</p>
+        <button onclick="registrarVencedor(${semana}, '${alianca1.nome}', '${alianca2.nome}', '${alianca1.nome}', this)">${alianca1.nome} <span class="alliance-world-card-inline">${alianca1.world}</span></button>
+        <button onclick="registrarVencedor(${semana}, '${alianca1.nome}', '${alianca2.nome}', '${alianca2.nome}', this)">${alianca2.nome} <span class="alliance-world-card-inline">${alianca2.world}</span></button>
+    `;
+    return matchDiv;
+}
+
+function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, clickedButton) {
+    // Criar uma chave de duelo consistente independentemente da ordem dos nomes
+    const dueloKey = [aliancaNome1, aliancaNome2].sort().join('-');
+    const weekId = `week-${semana}`;
+
+    // Inicializa a estrutura para a semana se ainda não existir
+    if (!duelosRealizados[weekId]) {
+        duelosRealizados[weekId] = {};
+    }
+
+    // Verifica se o duelo já foi registrado para esta semana
+    if (duelosRealizados[weekId][dueloKey] !== undefined) {
+        // Duelo já foi registrado, previne duplo clique
+        return;
+    }
+
+    // Desabilitar todos os botões do duelo
+    const parentDiv = clickedButton.closest('.match');
+    const buttons = parentDiv.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = true);
+
+    // Marcar o botão do vencedor
+    clickedButton.classList.add('selected-winner');
+
+    // Atualizar pontuação e vitórias/derrotas
+    const aliancaVencedora = aliancas.find(a => a.nome === vencedorNome);
+    const aliancaPerdedora = aliancas.find(a => a.nome === (vencedorNome === aliancaNome1 ? aliancaNome2 : aliancaNome1));
+
+    if (aliancaVencedora) {
+        aliancaVencedora.vit++;
+        aliancaVencedora.pts += 3; // +3 pontos pela vitória
+    }
+    if (aliancaPerdedora) {
+        aliancaPerdedora.der++;
+        aliancaPerdedora.pts += 1; // +1 ponto pela derrota (participação)
+    }
+
+    // Registrar o duelo como realizado
+    duelosRealizados[weekId][dueloKey] = vencedorNome;
+
+    atualizarRanking();
+}
+
+function atualizarRanking() {
+    aliancas.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts; // Maior pontuação primeiro
+        if (b.vit !== a.vit) return b.vit - a.vit; // Mais vitórias segundo
+        return a.der - b.der; // Menos derrotas terceiro
+    });
+
+    const rankingList = document.getElementById('ranking-list');
+    rankingList.innerHTML = '';
+
+    aliancas.forEach((alianca, index) => {
+        const li = document.createElement('li');
+        const rank = index + 1;
+        li.setAttribute('data-rank', rank); // Usar data-attribute para o CSS
+
+        let trophyHtml = '';
+        if (rank === 1) {
+            trophyHtml = '<i class="fas fa-trophy trophy gold"></i>';
+        } else if (rank === 2) {
+            trophyHtml = '<i class="fas fa-trophy trophy silver"></i>';
+        } else if (rank === 3) {
+            trophyHtml = '<i class="fas fa-trophy trophy bronze"></i>';
+        }
+
+        // Adiciona a largura da barra de progresso dinamicamente
+        // Calcula a largura da barra de progresso baseada na porcentagem de vitórias em relação ao máximo de vitórias possível
+        const maxVitorias = Math.max(...aliancas.map(a => a.vit), 1); // Garante que não divida por zero
+        let barWidth = (alianca.vit / maxVitorias) * 100;
+        
+        // Ajuste para garantir uma barra mínima visível para alianças com poucas vitórias
+        if (barWidth < 10 && alianca.vit > 0) barWidth = 10; // Adicionado para alianças com vitórias, mas porcentagem baixa
+        else if (alianca.vit === 0) barWidth = 0; // Para 0 vitórias, barra 0%
+
+        li.style.setProperty('--bar-width', `${barWidth}%`);
+
+        li.innerHTML = `
+            ${trophyHtml} <span class="rank-position">${rank}</span>
+            <span class="alliance-name-wrapper">
+                <span class="alliance-name">${alianca.nome}</span>
+                <span class="alliance-world-card">${alianca.world}</span>
+            </span>
+            <span class="alliance-stats">V: ${alianca.vit} D: ${alianca.der} P: ${alianca.pts}</span>
+        `;
+        rankingList.appendChild(li);
+    });
+}
