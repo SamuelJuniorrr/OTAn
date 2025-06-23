@@ -1,97 +1,174 @@
+/* Geral */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; /* Fonte mais moderna */
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f4f4f4;
+    background-color: #eef2f6; /* Fundo mais suave */
     margin: 20px;
-}
-
-h1 {
     color: #333;
 }
 
+h1 {
+    color: #2c3e50; /* Cor mais escura para o título */
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+/* Contêiner Principal das Semanas */
 #tournament-container {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 30px; /* Aumenta o espaço entre os cards de semana */
+    padding: 30px;
+    background-color: #ffffff; /* Fundo branco para a área geral do torneio */
+    border-radius: 12px; /* Cantos mais arredondados */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
+    overflow-x: auto; /* Permite rolagem horizontal */
+    max-width: 95vw; /* Limita a largura para telas grandes */
+}
+
+/* Cards de Semana */
+.week-card { /* Renomeado de .week para .week-card */
+    flex-shrink: 0;
+    min-width: 280px; /* Aumenta a largura mínima do card */
+    width: 320px; /* Largura padrão para cards de semana */
+    background-color: #fdfdfd; /* Quase branco para o fundo do card */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra para o card da semana */
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow-x: auto; /* Permite rolagem horizontal se muitas semanas */
+    margin-bottom: 20px; /* Espaço entre os cards se quebrar a linha */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.week {
-    flex-shrink: 0; /* Impede que as semanas encolham */
-    min-width: 250px; /* Largura mínima para cada semana */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    background-color: #f9f9f9;
-}
-
-.week h2 {
+.week-card h2 {
     text-align: center;
-    color: #555;
+    color: #34495e; /* Cor para o título da semana */
     margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #ecf0f1; /* Linha de separação */
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+/* Duelos (Matches) dentro dos Cards */
+.matches {
+    width: 100%; /* Ocupa toda a largura do card da semana */
 }
 
 .match {
+    background-color: #ffffff; /* Fundo branco para cada duelo */
+    border: 1px solid #e0e6ed; /* Borda suave */
+    border-radius: 8px; /* Cantos arredondados */
+    padding: 15px;
+    margin-bottom: 15px; /* Espaço entre duelos */
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); /* Sombra leve para o duelo */
+    transition: transform 0.2s ease-in-out; /* Efeito ao passar o mouse */
+}
+
+.match:hover {
+    transform: translateY(-3px); /* Leve levantamento ao passar o mouse */
 }
 
 .match p {
-    margin: 5px 0;
-    font-weight: bold;
+    margin: 5px 0 15px 0;
+    font-weight: 600;
+    color: #4a6572; /* Cor mais escura para o texto do confronto */
+    font-size: 1.1em;
+    text-align: center;
 }
 
+/* Botões de Seleção de Vencedor */
 .match button {
-    background-color: #4CAF50;
+    background-color: #3498db; /* Azul suave */
     color: white;
-    padding: 8px 12px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px; /* Cantos arredondados para botões */
     cursor: pointer;
-    margin-top: 5px;
-    transition: background-color 0.3s ease;
+    margin: 5px; /* Espaço entre os botões */
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    width: calc(100% - 10px); /* Ocupa quase toda a largura do duelo */
+    max-width: 200px; /* Limite para não ficarem muito largos */
 }
 
-.match button:hover {
-    background-color: #45a049;
+.match button:hover:not(:disabled) {
+    background-color: #2980b9; /* Azul mais escuro ao passar o mouse */
+    transform: translateY(-1px);
 }
 
 .match button.selected-winner {
-    background-color: #2196F3;
+    background-color: #27ae60; /* Verde vibrante para o vencedor */
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3); /* Sombra para o vencedor */
+    font-weight: 700;
 }
 
 .match button:disabled {
-    background-color: #ccc;
+    background-color: #cccccc;
     cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+/* Classificação Final */
+#final-ranking h2 {
+    border-bottom: none; /* Remove a borda inferior, se houver */
+    margin-bottom: 15px;
 }
 
 #final-ranking ul {
     list-style: none;
     padding: 0;
+    width: 100%;
 }
 
 #final-ranking li {
-    background-color: #e6f7ff;
-    padding: 8px;
-    margin-bottom: 5px;
-    border-radius: 3px;
-    border: 1px solid #b3e0ff;
+    background-color: #e0f7fa; /* Fundo mais claro para itens do ranking */
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border: 1px solid #b2ebf2; /* Borda suave */
+    font-size: 1.05em;
+    display: flex;
+    justify-content: space-between; /* Alinha texto e stats nas pontas */
+    align-items: center;
 }
 
-/* Estilo para alianças que não venceram (para desabilitar botões) */
-.alliance-loser {
-    opacity: 0.6;
-    pointer-events: none; /* Impede cliques em alianças perdedoras */
+#final-ranking li:nth-child(1) { /* Estilo para o 1º lugar */
+    background-color: #ffe0b2;
+    border-color: #ffcc80;
+    font-weight: bold;
+}
+
+#final-ranking li:nth-child(2) { /* Estilo para o 2º lugar */
+    background-color: #e0e0e0;
+    border-color: #bdbdbd;
+}
+
+#final-ranking li:nth-child(3) { /* Estilo para o 3º lugar */
+    background-color: #d1c4e9;
+    border-color: #b39ddb;
+}
+
+/* Responsividade Básica */
+@media (max-width: 768px) {
+    #tournament-container {
+        flex-direction: column; /* Empilha os cards de semana em telas menores */
+        align-items: center;
+        padding: 15px;
+    }
+
+    .week-card {
+        min-width: unset; /* Remove o min-width fixo */
+        width: 90%; /* Ocupa mais largura em telas menores */
+    }
 }
