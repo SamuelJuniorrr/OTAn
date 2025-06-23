@@ -253,3 +253,46 @@ function desenharGraficoOTAn() {
       scales: {
         y: {
           reverse: true,
+          min: 1,
+          max: 16,
+          ticks: {
+            stepSize: 1,
+            color: '#00ffc8'
+          },
+          grid: {
+            color: '#333'
+          },
+          title: {
+            display: true,
+            text: 'Posição',
+            color: '#00ffc8',
+            font: { size: 14 }
+          }
+        },
+        x: {
+          ticks: { color: '#00ffc8' },
+          grid: { color: '#333' },
+          title: {
+            display: true,
+            text: 'Semana',
+            color: '#00ffc8',
+            font: { size: 14 }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#ffd700' }
+        },
+        tooltip: {
+          enabled: true,
+          backgroundColor: '#222',
+          titleColor: '#ffd700',
+          bodyColor: '#e0e0e0'
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
