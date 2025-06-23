@@ -297,9 +297,9 @@ function restaurarEstadoDuelos(weekNum) {
             buttons.forEach(button => {
                 const buttonAllianceName = button.textContent.trim().split('#')[0].trim(); 
                 if (buttonAllianceName === vencedorNome) {
-                    button.classList.add('selected-winner');
+                    button.classList.add('selected-winner'); // Adiciona a classe para destacar o vencedor
                 }
-                button.disabled = true; 
+                button.disabled = true; // Desabilita todos os botões neste duelo concluído
             });
         }
     });
@@ -323,11 +323,15 @@ function registrarVencedor(semana, matchId, aliancaNome1, aliancaNome2, vencedor
         return; 
     }
 
+    // Desabilita os botões do duelo
     const parentDiv = clickedButton.closest('.match');
     const buttons = parentDiv.querySelectorAll('button');
     buttons.forEach(btn => btn.disabled = true);
+    
+    // Adiciona a classe 'selected-winner' apenas ao botão do vencedor
     clickedButton.classList.add('selected-winner');
 
+    // Atualiza pontuação e vitórias/derrotas das alianças
     const aliancaVencedora = aliancas.find(a => a.nome === vencedorNome);
     const aliancaPerdedora = aliancas.find(a => a.nome === (vencedorNome === aliancaNome1 ? aliancaNome2 : aliancaNome1));
 
@@ -347,7 +351,7 @@ function registrarVencedor(semana, matchId, aliancaNome1, aliancaNome2, vencedor
     };
 
     atualizarRanking();
-    salvarEstado();
+    salvarEstado(); // Salva o estado após cada registro de vencedor
 
     // Verifica se todos os duelos que *deveriam* ser gerados para a semana atual foram concluídos
     // Contamos os duelos que foram de fato gerados e estão no DOM (allGeneratedMatchesHTML)
@@ -355,6 +359,7 @@ function registrarVencedor(semana, matchId, aliancaNome1, aliancaNome2, vencedor
     const completedMatchesInCurrentWeek = Object.keys(duelosRealizados[`week-${currentWeek}`] || {}).length;
 
     if (completedMatchesInCurrentWeek === totalMatchesGeneratedForCurrentWeek) {
+        // Se todos os duelos da semana ativa foram concluídos, avança para a próxima
         if (currentWeek < semanas) {
             currentWeek++;
             
