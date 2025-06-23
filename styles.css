@@ -1,243 +1,111 @@
-/* Reset básico */
-* {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
-}
 body {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
-  color: #eee;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1.5rem 1rem;
+  background-color: #1f1f1f;
+  color: #f5f5f5;
 }
 
-/* Container principal */
-.container {
-  max-width: 900px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.8rem;
-}
-
-/* Header */
-header h1 {
-  font-weight: 700;
-  font-size: 3rem;
-  color: #00caff;
+header {
   text-align: center;
-  text-shadow: 0 0 12px #00caff;
-  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background-color: #2b2b2b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Destaque OTAn */
+h1 {
+  color: #00caff;
+  margin: 0;
+  font-size: 2rem;
+}
+
 .highlight {
   color: #ffd700;
-  text-shadow: 0 0 10px #ffd700;
+  font-weight: bold;
 }
 
-/* Cards padrão */
+.container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .card {
-  background: #222;
-  padding: 1.8rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 18px rgba(0, 202, 255, 0.25);
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Inputs do ranking inicial em grid */
-.grid-inputs {
+.card h2 {
+  margin-top: 0;
+  color: #00caff;
+}
+
+.ranking-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
-  gap: 1rem 1.2rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
 }
 
-.grid-inputs input {
-  padding: 0.65rem 1rem;
-  border-radius: 10px;
-  border: none;
-  background: #333;
-  color: #eee;
-  font-size: 1.05rem;
-  box-shadow: inset 0 0 6px rgba(0, 202, 255, 0.5);
-  transition: background-color 0.3s ease;
-}
-
-.grid-inputs input::placeholder {
-  color: #666;
-}
-
-.grid-inputs input:focus {
-  background: #0c0c0c;
-  outline: none;
-  box-shadow: 0 0 12px #00caff;
-}
-
-/* Botões primários */
-.btn-primary {
-  display: block;
+.ranking-grid input {
   width: 100%;
-  padding: 0.75rem 0;
-  border-radius: 10px;
+  padding: 0.5rem;
+  border-radius: 5px;
   border: none;
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #111;
-  background: #00caff;
-  box-shadow: 0 0 15px #00caff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-  background: #0099cc;
+  background: #444;
   color: #fff;
 }
 
-/* Ranking - lista */
+.btn {
+  background-color: #00caff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  color: #1f1f1f;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.match-card {
+  background: #3b3b3b;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.match-card .team {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.match-card .team:hover {
+  background: #00caff;
+  color: #000;
+}
+
+.match-card .selected {
+  background-color: #00caff;
+  color: #000;
+  font-weight: bold;
+}
+
 .ranking-list {
-  list-style: decimal inside;
-  font-size: 1.2rem;
-  max-width: 350px;
-  margin: 0 auto;
+  list-style: none;
   padding-left: 0;
 }
 
 .ranking-list li {
-  background: #111;
-  margin-bottom: 0.7rem;
-  padding: 0.7rem 1.1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 202, 255, 0.15);
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #eee;
-  transition: all 0.3s ease;
-}
-
-.ranking-list li.otan {
-  background: #3a3000;
-  color: #ffd700;
-  box-shadow: 0 0 14px #ffd700;
-  font-weight: 700;
-}
-
-/* Setas subida/descida */
-.ranking-list li.subiu::after {
-  content: '⬆️';
-  margin-left: 10px;
-  color: #0f0;
-}
-.ranking-list li.desceu::after {
-  content: '⬇️';
-  margin-left: 10px;
-  color: #f00;
-}
-
-/* Grid dos confrontos (cards) */
-.confrontos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-  gap: 1.4rem;
-}
-
-/* Card individual de confronto */
-.card-confronto {
-  background: #111;
-  border-radius: 14px;
-  padding: 1.3rem 1.8rem;
-  box-shadow: 0 0 18px rgba(0, 202, 255, 0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  user-select: none;
-  transition: box-shadow 0.3s ease;
-}
-
-.card-confronto:hover {
-  box-shadow: 0 0 30px #00caff;
-}
-
-/* Nomes das alianças no card */
-.alianca-nome {
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: #ddd;
-  text-align: center;
-  padding: 0.3rem 0;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.alianca-nome.otan {
-  background: #ffd700;
-  color: #222;
-  font-weight: 900;
-  box-shadow: 0 0 20px #ffd700;
-  border-color: #ffd700;
-}
-
-.alianca-nome:hover {
-  background: #00caff;
-  color: #111;
-  border-color: #00caff;
-}
-
-.alianca-nome.selected {
-  background: #00caff;
-  color: #111;
-  box-shadow: 0 0 25px #00caff;
-  border-color: #00caff;
-}
-
-/* Título das seções */
-h2 {
-  font-weight: 700;
-  font-size: 1.9rem;
-  margin-bottom: 1rem;
-  color: #00caff;
-  text-shadow: 0 0 10px #00caff;
-  text-align: center;
-}
-
-/* Histórico */
-#historico-list {
-  max-height: 240px;
-  overflow-y: auto;
-  padding: 0 0.5rem;
-  font-size: 1rem;
-  line-height: 1.35;
-  color: #ddd;
-  user-select: text;
-}
-
-#historico-list div {
-  margin-bottom: 1rem;
-  background: #222;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(0, 202, 255, 0.15);
-}
-
-/* Gráfico */
-#grafico-otan-section {
-  max-width: 720px;
-  margin: 0 auto;
-  padding-top: 0.6rem;
-}
-
-@media (max-width: 480px) {
-  .grid-inputs {
-    grid-template-columns: repeat(auto-fit,minmax(110px,1fr));
-  }
-  .confrontos-grid {
-    grid-template-columns: 1fr;
-  }
+  padding: 0.5rem;
+  border-bottom: 1px solid #444;
 }
