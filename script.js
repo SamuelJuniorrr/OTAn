@@ -40,17 +40,20 @@ let duelosPorSemana = aliancasOriginal.length / 2; // (16 alianças / 2 = 8 duel
 let currentWeek = 1; // A semana atual ativa para registro de resultados
 
 // Armazenamento global para o HTML dos duelos de CADA semana (populado dinamicamente)
-// Isso é necessário porque os duelos são gerados dinamicamente semana a semana,
-// mas precisamos re-popular as semanas anteriores com seus duelos originais ao carregar/resetar.
 let allGeneratedMatchesHTML = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    carregarEstado(); // Tenta carregar o estado salvo do localStorage
-    inicializarTorneio();
+    // Limpa o localStorage ao carregar a página para sempre iniciar do zero
+    localStorage.clear(); 
+    
+    carregarEstado(); // Carrega o estado (que agora estará vazio, efetivamente reiniciando)
+    inicializarTorneio(); // Inicializa o torneio com o estado carregado (ou padrão)
 });
 
 /**
  * Salva o estado atual do torneio (alianças, duelosRealizados, currentWeek) no localStorage.
+ * Esta função agora é chamada *apenas* para persistir o progresso DURANTE a sessão
+ * ou ao usar o botão de reset (que limpa e depois salva o estado inicial).
  */
 function salvarEstado() {
     try {
@@ -65,6 +68,9 @@ function salvarEstado() {
 
 /**
  * Carrega o estado do torneio do localStorage.
+ * Com a nova lógica, esta função será chamada após o `localStorage.clear()` no DOMContentLoaded,
+ * então ela efetivamente carregará um estado vazio (o que é o objetivo para "iniciar do 0").
+ * Ela ainda é útil para manter a estrutura, caso no futuro você queira reverter para salvar o progresso.
  */
 function carregarEstado() {
     try {
@@ -78,17 +84,14 @@ function carregarEstado() {
             currentWeek = parseInt(savedCurrentWeek);
             
             // Reconstroi allGeneratedMatchesHTML a partir de duelosRealizados para semanas já jogadas
-            // Isso é crucial para que `restaurarEstadoDuelos` possa encontrar os duelos.
             for (let s = 1; s <= currentWeek; s++) {
                 if (duelosRealizados[`week-${s}`]) {
-                    // Temporariamente gera os duelos para esta semana para que o HTML esteja disponível
-                    // e possa ser restaurado. O gerarDuelosParaSemana já armazena em allGeneratedMatchesHTML.
                     gerarDuelosParaSemana(s); 
                 }
             }
 
         } else {
-            // Se não houver estado salvo, inicializa com dados originais
+            // Se não houver estado salvo (que é o que acontecerá agora após o clear)
             aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
             duelosRealizados = {};
             currentWeek = 1;
@@ -96,7 +99,6 @@ function carregarEstado() {
     } catch (e) {
         console.error("Erro ao carregar estado do localStorage:", e);
         alert("Não foi possível carregar o progresso do torneio. Iniciando um novo torneio.");
-        // Em caso de erro, força um reset para evitar dados corrompidos
         aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
         duelosRealizados = {};
         currentWeek = 1;
@@ -114,24 +116,22 @@ function inicializarTorneio() {
     for (let s = 1; s <= semanas; s++) {
         // Se a semana já foi jogada ou é a semana atual
         if (s <= currentWeek) {
-            // Gera (ou regera) os duelos para esta semana.
-            // A função `gerarDuelosParaSemana` já armazena o HTML em `allGeneratedMatchesHTML`.
             gerarDuelosParaSemana(s); 
             
             const weekContainer = document.getElementById(`week-${s}`).querySelector('.matches');
-            weekContainer.innerHTML = ''; // Limpa antes de popular
+            weekContainer.innerHTML = ''; 
 
             if (allGeneratedMatchesHTML[s]) {
                 allGeneratedMatchesHTML[s].forEach(matchHTML => {
                     weekContainer.innerHTML += matchHTML;
                 });
             }
-            restaurarEstadoDuelos(s); // Restaura o estado (vencedor destacado) para esta semana
+            restaurarEstadoDuelos(s); 
         } else {
             // Semanas futuras devem estar visivelmente vazias (apenas o card)
             document.getElementById(`week-${s}`).querySelector('.matches').innerHTML = '';
         }
-        document.getElementById(`week-${s}`).classList.remove('hidden-module'); // Garante que o card da semana esteja visível
+        document.getElementById(`week-${s}`).classList.remove('hidden-module'); 
     }
 
     // Se currentWeek ultrapassou o número total de semanas, significa que o torneio terminou
@@ -149,11 +149,11 @@ function resetarTorneio() {
     aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
     duelosRealizados = {};
     currentWeek = 1;
-    allGeneratedMatchesHTML = {}; // Reseta os duelos armazenados
+    allGeneratedMatchesHTML = {}; 
 
-    localStorage.clear(); // Limpa completamente o localStorage relacionado ao torneio
+    localStorage.clear(); // Limpa completamente o localStorage ao resetar manualmente
 
-    // Limpa todos os containers de duelos
+    // Limpa todos os containers de duelos no DOM
     for (let s = 1; s <= semanas; s++) {
         document.getElementById(`week-${s}`).querySelector('.matches').innerHTML = '';
     }
@@ -161,7 +161,8 @@ function resetarTorneio() {
     // Oculta o rank final novamente
     document.getElementById('final-ranking').classList.add('hidden-module'); 
 
-    inicializarTorneio(); // Re-inicializa o torneio, que irá chamar salvarEstado
+    inicializarTorneio(); // Re-inicializa o torneio, que irá carregar um estado vazio
+    salvarEstado(); // Salva o estado inicial limpo para que ele comece a persistir DURANTE a sessão
 }
 
 /**
@@ -214,9 +215,7 @@ function gerarDuelosParaSemana(weekNum) {
             return a.der - b.der;
         });
 
-        // Limite para evitar loop infinito em casos de pareamento impossível
-        let tentativasMaximasPorAlianca = aliancasDisponiveisParaPareamento.length; 
-
+        // Loop para gerar os duelos da semana
         while (duelosGeradosParaEstaSemana.length < duelosPorSemana && aliancasDisponiveisParaPareamento.length >= 2) {
             let alianca1 = null;
             let indexAlianca1 = -1;
@@ -232,16 +231,16 @@ function gerarDuelosParaSemana(weekNum) {
             }
 
             if (!alianca1) {
-                // Todas as alianças disponíveis já duelaram nesta semana ou não há mais pares
-                break; 
+                break; // Nenhuma aliança disponível para Alianca1
             }
 
             let foundAlianca2 = false;
-            // Cria uma lista temporária de possíveis oponentes para alianca1, excluindo alianca1
             let potentialOpponents = [...aliancasDisponiveisParaPareamento].filter(a => a.nome !== alianca1.nome);
             
-            // Ordena os potenciais oponentes por proximidade de pontos a alianca1 para um pareamento mais "justo"
-            potentialOpponents.sort((a, b) => Math.abs(a.pts - alianca1.pts) - Math.abs(b.pts - alianca1.pts));
+            // Prioriza oponentes que não duelaram com alianca1 e que ainda não duelaram nesta semana.
+            // Randomiza um pouco a ordem para evitar o mesmo pareamento rígido a cada vez que a semana é gerada.
+            potentialOpponents.sort(() => Math.random() - 0.5); 
+            potentialOpponents.sort((a, b) => Math.abs(a.pts - alianca1.pts) - Math.abs(b.pts - alianca1.pts)); // Ordem secundária por proximidade de pontos
 
             for (let i = 0; i < potentialOpponents.length; i++) {
                 const alianca2 = potentialOpponents[i];
@@ -258,22 +257,19 @@ function gerarDuelosParaSemana(weekNum) {
                     aliancasJaDuelaramNestaSemana.add(alianca2.nome);
                     
                     foundAlianca2 = true;
-                    break; // Sai do loop de busca por alianca2
+                    break; 
                 }
             }
 
             if (!foundAlianca2) {
-                // Se alianca1 não conseguiu um par nesta iteração, move-a para o final
-                // ou a remove da lista temporariamente para tentar outro `alianca1`
-                aliancasDisponiveisParaPareamento.splice(indexAlianca1, 1); 
-                aliancasDisponiveisParaPareamento.push(alianca1); // Coloca no final para tentar depois
+                // Se alianca1 não conseguiu um par válido, ela pode ser "pulada" para a próxima iteração
+                // do loop WHILE para tentar com outras alianças disponíveis, ou se for o último, quebrar.
+                aliancasDisponiveisParaPareamento.splice(indexAlianca1, 1);
+                aliancasDisponiveisParaPareamento.push(alianca1); // Adiciona de volta ao final para uma nova tentativa
             }
             
-            // Isso previne loops infinitos se não houver pares válidos suficientes
-            if (duelosGeradosParaEstaSemana.length >= duelosPorSemana) break;
-            if (aliancasJaDuelaramNestaSemana.size === aliancasDisponiveisParaPareamento.length && duelosGeradosParaEstaSemana.length < duelosPorSemana) {
-                 // Caso todas as alianças disponíveis já duelaram na semana, mas não atingimos duelosPorSemana,
-                 // significa que não há mais pares únicos ou válidos.
+            // Se todas as alianças disponíveis já duelaram nesta semana, ou não há mais pares únicos
+            if (aliancasJaDuelaramNestaSemana.size === aliancasOriginal.length || duelosGeradosParaEstaSemana.length === duelosPorSemana) {
                  break;
             }
         }
@@ -399,8 +395,6 @@ function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, cli
                     nextWeekContainer.innerHTML += matchHTML;
                 });
             }
-            // Não é necessário chamar restaurarEstadoDuelos para a próxima semana aqui
-            // porque ela estará "limpa" de duelos registrados inicialmente.
             salvarEstado(); // Salva o estado após avançar de semana e gerar novos duelos
         } else {
             // Todas as semanas foram concluídas, exibe o ranking final
