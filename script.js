@@ -95,3 +95,4 @@ function proximaSemana() {
 // Inicializa
 atualizarRankingVisual();
 gerarConfrontos();
+ 
