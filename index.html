@@ -1,35 +1,136 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torneio VS - OTAn</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaveamento de Alianças - Evento VS</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .week {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+    .match {
+      display: flex;
+      justify-content: space-between;
+      width: 300px;
+      margin: 0.5rem 0;
+      background: #1f1f1f;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+    .match button {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .match button:hover {
+      background: #007bff;
+    }
+    .match .winner {
+      background: #00c853;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Torneio VS - <span class="highlight">OTAn</span></h1>
-  </header>
+  <h1>Chaveamento das Alianças - Evento VS</h1>
+  <div id="bracket"></div>
 
-  <main class="container">
-    <section class="card">
-      <h2>Ranking Inicial</h2>
-      <div class="ranking-grid" id="ranking-inputs"></div>
-      <button class="btn" onclick="iniciarTorneio()">Iniciar Torneio</button>
-    </section>
+  <script>
+    const TOTAL_SEMANAS = 4;
+    const PARTICIPANTES = 16;
+    let semanaAtual = 1;
+    let historico = [];
 
-    <section class="card" id="confrontos-section" style="display:none;">
-      <h2>Confrontos Semana <span id="semana-num">1</span></h2>
-      <div id="confrontos"></div>
-    </section>
+    function embaralhar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
 
-    <section class="card" id="ranking-section" style="display:none;">
-      <h2>Ranking Atual</h2>
-      <ol class="ranking-list" id="ranking-atual"></ol>
-    </section>
-  </main>
+    function gerarConfrontos(listaAlianças) {
+      const confrontos = [];
+      for (let i = 0; i < listaAlianças.length; i += 2) {
+        confrontos.push([listaAlianças[i], listaAlianças[i + 1]]);
+      }
+      return confrontos;
+    }
 
-  <script src="script.js"></script>
+    function exibirSemana(semana, confrontos) {
+      const container = document.getElementById("bracket");
+      const weekDiv = document.createElement("div");
+      weekDiv.className = "week";
+      weekDiv.id = `semana-${semana}`;
+
+      const titulo = document.createElement("h2");
+      titulo.innerText = `Semana ${semana}`;
+      weekDiv.appendChild(titulo);
+
+      confrontos.forEach((duelo, index) => {
+        const match = document.createElement("div");
+        match.className = "match";
+
+        duelo.forEach((alianca, pos) => {
+          const btn = document.createElement("button");
+          btn.innerText = alianca;
+          btn.onclick = () => marcarVencedor(semana, index, pos);
+          match.appendChild(btn);
+        });
+
+        weekDiv.appendChild(match);
+      });
+
+      container.appendChild(weekDiv);
+    }
+
+    function marcarVencedor(semana, index, posVencedor) {
+      const semanaDiv = document.getElementById(`semana-${semana}`);
+      const match = semanaDiv.getElementsByClassName("match")[index];
+      const botoes = match.getElementsByTagName("button");
+
+      Array.from(botoes).forEach(btn => btn.classList.remove("winner"));
+      botoes[posVencedor].classList.add("winner");
+
+      // Salva resultado
+      historico[semana - 1][index] = botoes[posVencedor].innerText;
+
+      // Gera próxima semana se todos os vencedores estiverem definidos
+      if (historico[semana - 1].every(v => v)) {
+        if (semana < TOTAL_SEMANAS) {
+          semanaAtual++;
+          const novaOrdem = [...historico[semana - 1]].sort();
+          const novosDuels = gerarConfrontos(novaOrdem);
+          historico.push(Array(novosDuels.length).fill(null));
+          exibirSemana(semanaAtual, novosDuels);
+        } else {
+          alert("Evento finalizado! Veja a classificação final.");
+        }
+      }
+    }
+
+    function iniciar() {
+      const alianças = Array.from({ length: PARTICIPANTES }, (_, i) => `Aliança ${i + 1}`);
+      const embaralhado = embaralhar(alianças);
+      const duelosSemana1 = gerarConfrontos(embaralhado);
+      historico = [Array(duelosSemana1.length).fill(null)];
+      exibirSemana(semanaAtual, duelosSemana1);
+    }
+
+    iniciar();
+  </script>
 </body>
 </html>
