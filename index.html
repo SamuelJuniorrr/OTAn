@@ -1,35 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torneio VS - OTAn</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árvore de Confrontos</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Torneio VS - <span class="highlight">OTAn</span></h1>
-  </header>
-
-  <main class="container">
-    <section class="card">
-      <h2>Ranking Inicial</h2>
-      <div class="ranking-grid" id="ranking-inputs"></div>
-      <button class="btn" onclick="iniciarTorneio()">Iniciar Torneio</button>
-    </section>
-
-    <section class="card" id="confrontos-section" style="display:none;">
-      <h2>Confrontos Semana <span id="semana-num">1</span></h2>
-      <div id="confrontos"></div>
-    </section>
-
-    <section class="card" id="ranking-section" style="display:none;">
-      <h2>Ranking Atual</h2>
-      <ol class="ranking-list" id="ranking-atual"></ol>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
+    <div class="bracket">
+        <div class="round" id="round1">
+            <!-- Confrontos da Semana 1 -->
+        </div>
+        <div class="round" id="round2">
+            <!-- Confrontos da Semana 2 -->
+        </div>
+        <div class="round" id="round3">
+            <!-- Confrontos da Semana 3 -->
+        </div>
+        <div class="round" id="round4">
+            <!-- Confrontos da Semana 4 -->
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
