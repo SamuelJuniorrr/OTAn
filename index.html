@@ -3,26 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Torneio OTAn - Ranking de Alianças</title>
+  <title>Torneio OTAn - Chaveamento VS</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Torneio - Classificação Semanal</h1>
+  <div class="container">
+    <h1><span class="highlight">Torneio VS</span> - Ranking OTAn</h1>
 
-  <div id="ranking-container">
-    <h2>Ranking Atual</h2>
-    <ol id="ranking-list"></ol>
+    <section id="ranking-container">
+      <h2>🏆 Ranking Atual</h2>
+      <ol id="ranking-list" class="ranking-list"></ol>
+    </section>
+
+    <section id="semana-info">
+      <h2 id="semana-title">🗓 Semana 1</h2>
+    </section>
+
+    <section id="confrontos"></section>
+
+    <button id="proxima-semana" onclick="proximaSemana()">➡ Próxima Semana</button>
+
+    <section id="historico-container">
+      <h2>📜 Histórico de Vitórias</h2>
+      <div id="historico"></div>
+    </section>
   </div>
-
-  <div id="semana-info">
-    <h2 id="semana-title">Semana 1</h2>
-  </div>
-
-  <div id="confrontos"></div>
-
-  <button id="proxima-semana" onclick="proximaSemana()">Próxima Semana</button>
 
   <script src="script.js"></script>
 </body>
 </html>
-  
