@@ -1,117 +1,234 @@
-body {
-  font-family: 'Orbitron', sans-serif;
-  background: #0f0f0f;
-  color: #e2e2e2;
-  margin: 0;
-  padding: 0;
+/* Reset e fonte base */
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
 }
-
-.container {
-  max-width: 1000px;
-  margin: auto;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
   padding: 2rem 1rem;
 }
 
-h1, h2 {
-  text-align: center;
-  color: #00ffc8;
-  text-shadow: 0 0 5px #00ffc8, 0 0 10px #00ffc8;
+/* Container centralizado */
+.container {
+  max-width: 900px;
+  width: 100%;
+  background: #222;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 150, 255, 0.3);
 }
 
+/* Título principal */
+h1 {
+  font-weight: 700;
+  font-size: 2.8rem;
+  color: #00caff;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 0 8px #00caff;
+}
+
+/* Destaque OTAn */
 .highlight {
   color: #ffd700;
-  text-shadow: 0 0 8px #ffd700;
+  text-shadow: 0 0 10px #ffd700;
 }
 
+/* Sessões */
 section {
-  margin-bottom: 2rem;
-  background: #1c1c1c;
-  padding: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #2b2b2b;
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 255, 204, 0.15);
+  box-shadow: 0 0 10px rgba(0, 202, 255, 0.15);
 }
 
-button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 6px;
-  background: #007bff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  margin: 0.5rem auto;
-  display: block;
-  transition: 0.2s ease;
-}
-
-button:hover {
-  background: #0056b3;
+/* Formularios e inputs */
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
 }
 
 #ranking-inputs input {
-  margin-bottom: 0.5rem;
-  padding: 0.4rem;
-  width: 100%;
+  flex: 1 1 150px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
   border: none;
-  border-radius: 5px;
-  background: #2a2a2a;
+  background: #333;
+  color: #e0e0e0;
+  box-shadow: inset 0 0 5px rgba(0, 202, 255, 0.5);
+  transition: background-color 0.3s;
+}
+
+#ranking-inputs input:focus {
+  background-color: #111;
+  outline: none;
+  box-shadow: 0 0 10px #00caff;
+}
+
+/* Botões */
+button {
+  cursor: pointer;
+  border: none;
+  padding: 0.7rem 1.6rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: #00caff;
+  color: #111;
+  box-shadow: 0 0 8px #00caff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top: 1rem;
+}
+
+button:hover {
+  background: #0099cc;
   color: #fff;
 }
 
+/* Ranking atual */
 .ranking-list {
-  list-style: decimal;
-  padding-left: 1.5rem;
+  list-style: decimal inside;
+  font-size: 1.15rem;
+  max-width: 350px;
+  margin: auto;
 }
 
 .ranking-list li {
-  margin: 0.3rem 0;
-  font-size: 1.1rem;
-}
-
-li.otan {
-  color: #ffd700;
-  font-weight: bold;
-  text-shadow: 0 0 8px #ffd700;
-}
-
-li.subiu::after {
-  content: \" ⬆️\";
-  color: #00ff00;
-}
-
-li.desceu::after {
-  content: \" ⬇️\";
-  color: #ff3333;
-}
-
-.confronto {
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin: 6px 0;
+  background: #111;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  color: #e0e0e0;
+  box-shadow: 0 0 8px rgba(0, 202, 255, 0.2);
+}
+
+/* Destaque OTAn */
+.ranking-list li.otan {
+  color: #ffd700;
+  font-weight: 700;
+  text-shadow: 0 0 6px #ffd700;
+  background: #222214;
+}
+
+/* Setas de subida/descida */
+.ranking-list li.subiu::after {
+  content: '⬆️';
+  color: #00ff00;
+  margin-left: 10px;
+}
+.ranking-list li.desceu::after {
+  content: '⬇️';
+  color: #ff4444;
+  margin-left: 10px;
+}
+
+/* Confrontos */
+.confronto {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   margin: 1rem 0;
-  background: #2a2a2a;
-  padding: 1rem;
-  border-radius: 8px;
 }
 
 .confronto button {
-  flex: 1;
-  margin: 0 0.5rem;
-  background: #333;
-  border: 2px solid #555;
+  flex: 1 1 45%;
+  background: #222;
+  color: #ccc;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 0 5px rgba(0, 202, 255, 0.2);
+  transition: background-color 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.confronto button:hover {
+  background-color: #00caff;
+  color: #111;
+  box-shadow: 0 0 15px #00caff;
 }
 
 .confronto button.selected {
-  background-color: #00ffc8;
-  color: black;
-  border-color: #00ffc8;
+  background-color: #00caff;
+  color: #111;
+  box-shadow: 0 0 15px #00caff;
+  border-color: #00caff;
 }
 
+/* Destaque OTAn nos botões do confronto */
 .confronto button.otan {
-  background: #ffd700;
-  color: black;
-  font-weight: bold;
+  background-color: #ffd700;
+  color: #111;
+  font-weight: 700;
+  box-shadow: 0 0 15px #ffd700;
+  border-color: #ffd700;
 }
 
+.confronto button.otan.selected {
+  background-color: #fff;
+  color: #222;
+  box-shadow: 0 0 25px #ffd700;
+  border-color: #ffd700;
+}
+
+/* Simulação ranking */
+#simulacao-container ol {
+  max-width: 350px;
+  margin: auto;
+  font-size: 1.1rem;
+  list-style: decimal inside;
+}
+
+#simulacao-container li.otan {
+  color: #ffd700;
+  font-weight: 700;
+  text-shadow: 0 0 6px #ffd700;
+}
+
+#simulacao-container li.subiu::after {
+  content: '⬆️';
+  color: #00ff00;
+  margin-left: 10px;
+}
+#simulacao-container li.desceu::after {
+  content: '⬇️';
+  color: #ff4444;
+  margin-left: 10px;
+}
+
+/* Histórico */
+#historico-container div {
+  margin-bottom: 1rem;
+  background: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 202, 255, 0.1);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Gráfico */
+#grafico-container {
+  max-width: 700px;
+  margin: 2rem auto 1rem;
+  background: #222;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 202, 255, 0.3);
+}
+
+/* Utilities */
 .hidden {
   display: none;
 }
