@@ -4,67 +4,91 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chaveamento VS - Dark War Survival</title>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background-color: #111;
-      color: #f5c842;
-      font-family: 'Arial', sans-serif;
+      background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+      color: #FFD700;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
       padding: 20px;
       text-align: center;
     }
     h1 {
+      color: #ff0000;
+      text-shadow: 2px 2px 8px #FFD700;
+      font-size: 2.5em;
       margin-bottom: 40px;
-      color: #f00;
-      text-shadow: 0 0 10px #f5c842;
     }
     .bracket {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .round {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
     }
     .match {
-      border: 1px solid #f5c842;
-      padding: 10px;
-      width: 200px;
-      background-color: #222;
-      border-radius: 8px;
-      box-shadow: 0 0 8px #f5c84233;
+      background: #222;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 15px;
+      width: 220px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      transition: transform 0.2s;
+    }
+    .match:hover {
+      transform: scale(1.03);
+    }
+    .match-title {
+      font-size: 1em;
+      margin-bottom: 10px;
+      color: #fff;
     }
     .match button {
-      margin-top: 5px;
-      padding: 5px 10px;
-      background: #f00;
+      margin: 5px;
+      padding: 8px 12px;
+      background: #ff0000;
       color: white;
       border: none;
+      border-radius: 5px;
+      font-size: 0.9em;
       cursor: pointer;
-      border-radius: 4px;
+      transition: background 0.3s;
     }
     .match button:hover {
       background: #b30000;
     }
-    .round {
-      margin-bottom: 40px;
-    }
-    button.reset {
-      margin-top: 30px;
-      background-color: #444;
-      border: 1px solid #f5c842;
+    .reset {
+      margin-top: 40px;
+      background-color: #333;
+      border: 2px solid #FFD700;
+      color: #FFD700;
       padding: 10px 20px;
-      color: #f5c842;
+      font-size: 1em;
+      border-radius: 8px;
       cursor: pointer;
-      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .reset:hover {
+      background-color: #444;
     }
   </style>
 </head>
 <body>
   <h1>Chaveamento VS - Dark War Survival</h1>
-  <div id="bracket"></div>
+  <div class="bracket" id="bracket"></div>
   <button class="reset" onclick="resetBracket()">Resetar Chaveamento</button>
 
   <script>
-    const alianças = [
+    const aliancas = [
       "OTAn", "Dragões", "Titãs", "Legião", "Império", "Fênix", "Mercenários", "Gladiadores",
       "Vikings", "Templários", "Spartans", "Renegados", "Valhalla", "Guardians", "Predadores", "Anarquia"
     ];
@@ -81,7 +105,8 @@
 
         const [a, b] = duelo;
         const titulo = document.createElement("div");
-        titulo.innerHTML = `<strong>Duelo ${i + 1}:</strong><br>${a} x ${b}`;
+        titulo.className = "match-title";
+        titulo.innerHTML = `Duelo ${i + 1}:<br>${a} x ${b}`;
 
         const btnA = document.createElement("button");
         btnA.innerText = a;
@@ -124,8 +149,8 @@
       rodadas = [];
       document.getElementById("bracket").innerHTML = "";
       const primeiraRodada = [];
-      for (let i = 0; i < alianças.length; i += 2) {
-        primeiraRodada.push({ luta: [alianças[i], alianças[i + 1]], vencedor: null });
+      for (let i = 0; i < aliancas.length; i += 2) {
+        primeiraRodada.push({ luta: [aliancas[i], aliancas[i + 1]], vencedor: null });
       }
       rodadas.push(primeiraRodada);
       criarRodada(primeiraRodada.map(p => p.luta), 0);
