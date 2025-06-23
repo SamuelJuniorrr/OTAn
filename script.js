@@ -1,246 +1,242 @@
-// Variáveis globais
-let ranking = [];
-let semanaAtual = 1;
-const totalSemanas = 4;
-let resultadosSemana = [];
-let historico = [];
-let posicoesAntigas = [];
-let trajetoriaOTAn = [];
-
-// DOM
 const rankingInputsDiv = document.getElementById("ranking-inputs");
 const rankingForm = document.getElementById("ranking-form");
-const rankingContainer = document.getElementById("ranking-container");
 const rankingList = document.getElementById("ranking-list");
-const semanaTitle = document.getElementById("semana-title");
-const confrontosDiv = document.getElementById("confrontos");
-const simulacaoContainer = document.getElementById("simulacao-container");
+const confrontosContainer = document.getElementById("confrontos-container");
+const semanaNumSpan = document.getElementById("semana-num");
 const rankingPrevisto = document.getElementById("ranking-previsto");
-const verificarRankingBtn = document.getElementById("verificar-ranking");
-const historicoContainer = document.getElementById("historico-container");
-const historicoDiv = document.getElementById("historico");
-const graficoContainer = document.getElementById("grafico-container");
-
+const simulacaoRankingSection = document.getElementById("simulacao-ranking");
+const btnConfirmarSemana = document.getElementById("btn-confirmar");
+const historicoList = document.getElementById("historico-list");
+const graficoOTAnSection = document.getElementById("grafico-otan-section");
 const ctxGrafico = document.getElementById("grafico-otan").getContext("2d");
+
+let ranking = [];
+let resultadosSemana = [];
+let historico = [];
+let semanaAtual = 1;
+const totalSemanas = 4;
+let trajetoriaOTAn = [];
 let graficoOTAn;
 
-// Função para criar inputs do ranking inicial
+// Cria inputs para ranking inicial
 function criarInputsRanking() {
   rankingInputsDiv.innerHTML = "";
   for(let i = 1; i <= 16; i++) {
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = `Posição ${i}`;
-    input.required = true;
     input.maxLength = 20;
     input.autocomplete = "off";
-    input.dataset.pos = i;
     rankingInputsDiv.appendChild(input);
   }
 }
-
-// Inicializa inputs no carregamento
 criarInputsRanking();
 
-// Evento ao enviar o ranking inicial
-rankingForm.addEventListener("submit", function(e) {
+// Ao enviar ranking inicial
+rankingForm.addEventListener("submit", e => {
   e.preventDefault();
-
-  // Ler os valores digitados e montar o ranking
   const inputs = rankingInputsDiv.querySelectorAll("input");
-  let nomes = [];
+  const nomes = [];
   for (let inp of inputs) {
-    let nome = inp.value.trim();
-    if(nome === "") {
+    const val = inp.value.trim();
+    if(!val) {
       alert("Preencha todas as posições do ranking.");
       return;
     }
-    nomes.push(nome);
+    nomes.push(val);
   }
-
   ranking = nomes;
-  posicoesAntigas = [...ranking];
-  trajetoriaOTAn = [ranking.indexOf("OTAn") + 1]; // posição inicial OTAn
   semanaAtual = 1;
-  resultadosSemana = [];
+  trajetoriaOTAn = [ranking.indexOf("OTAn") + 1];
   historico = [];
+  resultadosSemana = [];
 
-  // Oculta o form e mostra a área principal
-  document.getElementById("input-container").classList.add("hidden");
-  rankingContainer.classList.remove("hidden");
-  semanaTitle.textContent = `🗓 Semana ${semanaAtual}`;
-  document.getElementById("semana-info").classList.remove("hidden");
-  confrontosDiv.classList.remove("hidden");
-  verificarRankingBtn.classList.remove("hidden");
-  historicoContainer.classList.remove("hidden");
-  graficoContainer.classList.add("hidden");
+  document.getElementById("input-ranking").classList.add("hidden");
+  document.getElementById("ranking-atual").classList.remove("hidden");
+  document.getElementById("confrontos-semana").classList.remove("hidden");
+  simulacaoRankingSection.classList.add("hidden");
+  document.getElementById("historico-semanas").classList.remove("hidden");
+  graficoOTAnSection.classList.add("hidden");
 
   atualizarRankingVisual();
+  semanaNumSpan.textContent = `Semana ${semanaAtual}`;
   gerarConfrontos();
 });
 
-// Atualiza visual do ranking com destaque e setas de subida/descida
+// Atualiza visual do ranking atual
 function atualizarRankingVisual(prevRanking) {
   rankingList.innerHTML = "";
-  for (let i = 0; i < ranking.length; i++) {
+  ranking.forEach((alianca, i) => {
     const li = document.createElement("li");
-    li.textContent = ranking[i];
-    if (ranking[i].toUpperCase() === "OTAN") {
-      li.classList.add("otan");
-    }
-    if (prevRanking) {
-      const posAntiga = prevRanking.indexOf(ranking[i]);
-      if (posAntiga > i) li.classList.add("subiu");
-      else if (posAntiga < i) li.classList.add("desceu");
+    li.textContent = alianca;
+    if(alianca.toUpperCase() === "OTAN") li.classList.add("otan");
+    if(prevRanking) {
+      const posAnterior = prevRanking.indexOf(alianca);
+      if(posAnterior > i) li.classList.add("subiu");
+      else if(posAnterior < i) li.classList.add("desceu");
     }
     rankingList.appendChild(li);
-  }
+  });
 }
 
-// Gera confrontos pares para a semana atual
+// Gera cards dos confrontos da semana
 function gerarConfrontos() {
-  confrontosDiv.innerHTML = "";
-  resultadosSemana = [];
+  confrontosContainer.innerHTML = "";
+  resultadosSemana = new Array(ranking.length / 2);
 
-  for (let i = 0; i < ranking.length; i += 2) {
+  for(let i = 0; i < ranking.length; i += 2) {
     const alianca1 = ranking[i];
-    const alianca2 = ranking[i + 1];
+    const alianca2 = ranking[i+1];
 
-    const div = document.createElement("div");
-    div.className = "confronto";
-    div.dataset.index = i;
+    const card = document.createElement("div");
+    card.className = "card-confronto";
 
-    const btn1 = document.createElement("button");
+    const btn1 = document.createElement("div");
+    btn1.className = "alianca-nome";
     btn1.textContent = alianca1;
-    btn1.onclick = () => selecionarVencedor(i, alianca1, btn1, btn2);
-    if (alianca1.toUpperCase() === "OTAN") btn1.classList.add("otan");
+    if(alianca1.toUpperCase() === "OTAN") btn1.classList.add("otan");
+    btn1.onclick = () => selecionarVencedor(i/2, alianca1, btn1, btn2);
 
-    const btn2 = document.createElement("button");
+    const vsSpan = document.createElement("span");
+    vsSpan.textContent = "vs";
+    vsSpan.style.textAlign = "center";
+    vsSpan.style.fontWeight = "700";
+    vsSpan.style.color = "#00caff";
+
+    const btn2 = document.createElement("div");
+    btn2.className = "alianca-nome";
     btn2.textContent = alianca2;
-    btn2.onclick = () => selecionarVencedor(i, alianca2, btn2, btn1);
-    if (alianca2.toUpperCase() === "OTAN") btn2.classList.add("otan");
+    if(alianca2.toUpperCase() === "OTAN") btn2.classList.add("otan");
+    btn2.onclick = () => selecionarVencedor(i/2, alianca2, btn2, btn1);
 
-    div.appendChild(btn1);
-    div.appendChild(document.createTextNode(" vs "));
-    div.appendChild(btn2);
+    card.appendChild(btn1);
+    card.appendChild(vsSpan);
+    card.appendChild(btn2);
 
-    confrontosDiv.appendChild(div);
+    confrontosContainer.appendChild(card);
   }
 }
 
-// Marca o vencedor e desmarca o outro
-function selecionarVencedor(index, vencedor, btnV, btnP) {
+// Marca vencedor visualmente
+function selecionarVencedor(indexConfronto, vencedor, btnV, btnP) {
   btnV.classList.add("selected");
   btnP.classList.remove("selected");
-  resultadosSemana[index] = vencedor;
+  resultadosSemana[indexConfronto] = vencedor;
 }
 
-// Simula o ranking previsto com base nos vencedores selecionados
+// Simula ranking previsto da próxima semana
 function simularRanking() {
-  const totalConfrontos = ranking.length / 2;
-  if (resultadosSemana.filter(Boolean).length !== totalConfrontos) {
+  if(resultadosSemana.filter(Boolean).length !== ranking.length / 2) {
     alert("Marque todos os vencedores para simular.");
     return;
   }
 
-  // Cria ranking previsto com vencedores subindo na frente dos perdedores
   let rankingPrevistoArr = [];
-  for (let i = 0; i < ranking.length; i += 2) {
+
+  for(let i = 0; i < resultadosSemana.length; i++) {
+    // vencedor
     const vencedor = resultadosSemana[i];
-    const perdedor = ranking[i] === vencedor ? ranking[i + 1] : ranking[i];
+    // perdedor é quem não foi vencedor no confronto i
+    const idx1 = i * 2;
+    const idx2 = idx1 + 1;
+    const alianca1 = ranking[idx1];
+    const alianca2 = ranking[idx2];
+    const perdedor = (alianca1 === vencedor) ? alianca2 : alianca1;
     rankingPrevistoArr.push(vencedor, perdedor);
   }
 
-  // Atualiza UI simulação
   rankingPrevisto.innerHTML = "";
   rankingPrevistoArr.forEach((alianca, i) => {
     const li = document.createElement("li");
     li.textContent = alianca;
-    if (alianca.toUpperCase() === "OTAN") li.classList.add("otan");
-    // compara posições para setas
+    if(alianca.toUpperCase() === "OTAN") li.classList.add("otan");
     const posAtual = ranking.indexOf(alianca);
-    if (posAtual > i) li.classList.add("subiu");
-    else if (posAtual < i) li.classList.add("desceu");
+    if(posAtual > i) li.classList.add("subiu");
+    else if(posAtual < i) li.classList.add("desceu");
     rankingPrevisto.appendChild(li);
   });
 
-  simulacaoContainer.classList.remove("hidden");
-  verificarRankingBtn.style.display = "none";
+  simulacaoRankingSection.classList.remove("hidden");
+  btnConfirmarSemana.style.display = "block";
+  btnConfirmarSemana.onclick = confirmarSemana;
 }
 
-// Confirma a simulação e avança a semana
+// Confirma semana e atualiza ranking e histórico
 function confirmarSemana() {
-  // Recalcula ranking com base nos resultados da semana
   let rankingPrevistoArr = [];
-  for (let i = 0; i < ranking.length; i += 2) {
+
+  for(let i = 0; i < resultadosSemana.length; i++) {
     const vencedor = resultadosSemana[i];
-    const perdedor = ranking[i] === vencedor ? ranking[i + 1] : ranking[i];
+    const idx1 = i * 2;
+    const idx2 = idx1 + 1;
+    const alianca1 = ranking[idx1];
+    const alianca2 = ranking[idx2];
+    const perdedor = (alianca1 === vencedor) ? alianca2 : alianca1;
     rankingPrevistoArr.push(vencedor, perdedor);
   }
 
   historico.push({
     semana: semanaAtual,
-    resultados: resultadosSemana.slice(),
+    resultados: [...resultadosSemana],
     confrontos: [...ranking]
   });
 
-  posicoesAntigas = [...ranking];
+  const rankingAnterior = [...ranking];
   ranking = [...rankingPrevistoArr];
   semanaAtual++;
   trajetoriaOTAn.push(ranking.indexOf("OTAn") + 1);
 
-  // Atualiza visualizações
-  atualizarRankingVisual(posicoesAntigas);
+  atualizarRankingVisual(rankingAnterior);
   gerarConfrontos();
-  simulacaoContainer.classList.add("hidden");
-  verificarRankingBtn.style.display = "block";
-  semanaTitle.textContent = semanaAtual <= totalSemanas ? `🗓 Semana ${semanaAtual}` : "✅ Torneio Finalizado";
+  simulacaoRankingSection.classList.add("hidden");
+
+  if (semanaAtual <= totalSemanas) {
+    semanaNumSpan.textContent = `Semana ${semanaAtual}`;
+  } else {
+    semanaNumSpan.textContent = "🏁 Torneio Finalizado";
+    confrontosContainer.innerHTML = "";
+    btnConfirmarSemana.style.display = "none";
+    renderHistorico();
+    desenharGraficoOTAn();
+    graficoOTAnSection.classList.remove("hidden");
+  }
 
   renderHistorico();
-
-  if (semanaAtual > totalSemanas) {
-    // Finaliza torneio
-    confrontosDiv.innerHTML = "";
-    verificarRankingBtn.style.display = "none";
-    desenharGraficoOTAn();
-    graficoContainer.classList.remove("hidden");
-  }
 }
 
-// Renderiza histórico de vitórias
+// Renderiza histórico das vitórias
 function renderHistorico() {
-  historicoDiv.innerHTML = "";
+  historicoList.innerHTML = "";
   historico.forEach(item => {
     const div = document.createElement("div");
-    div.innerHTML = `<strong>Semana ${item.semana}:</strong><br>`;
-    for(let i = 0; i < item.resultados.length; i += 2) {
+    div.innerHTML = `<strong>Semana ${item.semana}</strong><br>`;
+    for(let i = 0; i < item.resultados.length; i++) {
       const vencedor = item.resultados[i];
-      const perdedor = item.confrontos[i] === vencedor ? item.confrontos[i + 1] : item.confrontos[i];
+      const idx = i * 2;
+      const perdedor = item.confrontos[idx] === vencedor ? item.confrontos[idx + 1] : item.confrontos[idx];
       div.innerHTML += `${vencedor} venceu ${perdedor}<br>`;
     }
-    historicoDiv.appendChild(div);
+    historicoList.appendChild(div);
   });
 }
 
-// Desenha gráfico da trajetória da OTAn usando Chart.js
+// Desenha gráfico da trajetória OTAn
 function desenharGraficoOTAn() {
-  const labels = Array.from({length: trajetoriaOTAn.length}, (_, i) => `Semana ${i + 1}`);
-
-  // Posições invertidas para o eixo Y: 1 no topo
+  const labels = trajetoriaOTAn.map((_, i) => `Semana ${i + 1}`);
   const dadosInvertidos = trajetoriaOTAn.map(pos => 17 - pos);
 
-  if(graficoOTAn) graficoOTAn.destroy();
+  if (graficoOTAn) graficoOTAn.destroy();
 
   graficoOTAn = new Chart(ctxGrafico, {
     type: 'line',
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         label: 'Posição OTAn (1º melhor)',
         data: dadosInvertidos,
-        fill: false,
         borderColor: '#ffd700',
         backgroundColor: '#ffd700',
+        fill: false,
         tension: 0.3,
         pointRadius: 6,
         pointHoverRadius: 8,
@@ -270,8 +266,12 @@ function desenharGraficoOTAn() {
           }
         },
         x: {
-          ticks: { color: '#00ffc8' },
-          grid: { color: '#333' },
+          ticks: {
+            color: '#00ffc8'
+          },
+          grid: {
+            color: '#333'
+          },
           title: {
             display: true,
             text: 'Semana',
@@ -282,7 +282,9 @@ function desenharGraficoOTAn() {
       },
       plugins: {
         legend: {
-          labels: { color: '#ffd700' }
+          labels: {
+            color: '#ffd700'
+          }
         },
         tooltip: {
           enabled: true,
@@ -296,3 +298,6 @@ function desenharGraficoOTAn() {
     }
   });
 }
+
+// Eventos extras: simular quando algum botão de confronto for clicado
+document.getElementById("confrontos-container").addEventListener("click", simularRanking);
