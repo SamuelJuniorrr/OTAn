@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -58,11 +57,7 @@
     let semanaAtual = 1;
     let historico = [];
 
-    function embaralhar(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
-
-    function gerarConfrontos(listaAlianças) {
+    function gerarConfrontosOrdenados(listaAlianças) {
       const confrontos = [];
       for (let i = 0; i < listaAlianças.length; i += 2) {
         confrontos.push([listaAlianças[i], listaAlianças[i + 1]]);
@@ -105,15 +100,13 @@
       Array.from(botoes).forEach(btn => btn.classList.remove("winner"));
       botoes[posVencedor].classList.add("winner");
 
-      // Salva resultado
       historico[semana - 1][index] = botoes[posVencedor].innerText;
 
-      // Gera próxima semana se todos os vencedores estiverem definidos
       if (historico[semana - 1].every(v => v)) {
         if (semana < TOTAL_SEMANAS) {
           semanaAtual++;
           const novaOrdem = [...historico[semana - 1]].sort();
-          const novosDuels = gerarConfrontos(novaOrdem);
+          const novosDuels = gerarConfrontosOrdenados(novaOrdem);
           historico.push(Array(novosDuels.length).fill(null));
           exibirSemana(semanaAtual, novosDuels);
         } else {
@@ -124,8 +117,7 @@
 
     function iniciar() {
       const alianças = Array.from({ length: PARTICIPANTES }, (_, i) => `Aliança ${i + 1}`);
-      const embaralhado = embaralhar(alianças);
-      const duelosSemana1 = gerarConfrontos(embaralhado);
+      const duelosSemana1 = gerarConfrontosOrdenados(alianças);
       historico = [Array(duelosSemana1.length).fill(null)];
       exibirSemana(semanaAtual, duelosSemana1);
     }
