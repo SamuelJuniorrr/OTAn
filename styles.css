@@ -1,1 +1,495 @@
+/* Importação de fontes (Space Grotesk para títulos, Bai Jamjuree para texto) */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Bai+Jamjuree:wght@400;600&display=swap');
 
+/* Variáveis de Cores (Paleta Inovadora) */
+:root {
+    --bg-dark: #0f0f1c; /* Fundo principal muito escuro */
+    --bg-module: #1b1b2f; /* Fundo para módulos/painéis */
+    --bg-element: #2a2a40; /* Fundo para elementos internos (duelos) */
+    --text-primary: #f0f0f5; /* Texto principal branco-azulado */
+    --text-secondary: #a0a0b0; /* Texto cinza suave */
+    --flow-gradient-start: #6a00ff; /* Início do gradiente "energia" (roxo) */
+    --flow-gradient-end: #00ffcc; /* Fim do gradiente "energia" (verde-água) */
+    --border-color-subtle: #3a3a50; /* Borda discreta */
+    --button-active-bg: linear-gradient(135deg, var(--flow-gradient-start), var(--flow-gradient-end)); /* Gradiente para botão ativo */
+    --winner-color: #00e676; /* Verde vibrante para o vencedor */
+    --disabled-color: #404058; /* Cor para elementos desabilitados */
+
+    /* Cores dos troféus */
+    --trophy-gold: #FFD700;
+    --trophy-silver: #C0C0C0;
+    --trophy-bronze: #CD7F32;
+    --world-card-bg: #4a4a60; /* Fundo do card de mundo */
+    --world-card-text: #e0e0e0;
+}
+
+/* Geral */
+body {
+    font-family: 'Bai Jamjuree', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow-x: auto; /* Pode haver scroll horizontal se a tela for pequena */
+    line-height: 1.6;
+    perspective: 1000px;
+}
+
+/* Fundo com Padrão de Fluxo (Pseudo-elemento ou SVG/PNG sutil) */
+.flow-background::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMjBoMjAwVjBIMHptMCA4MGgyMDBWNjBIMHptMCA4MGgyMDBWMTIwSDB6IiBmaWxsPSIjMjIyMjMyIiBvcGFjaXN2dGFwYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik0yMCAyMDBWMGgtMTZ2MjAwaDE2em04MCBoMjB2MjAwaC0yMHpNMzUuMzU1IDUyLjU2YTIwIDIwIDAgMCAxLTI4LjI4IDBsMTEuMzEzIDExLjMxYTIwIDIwIDAgMCAxIDI4LjI4IDBsLTExLjMxMyAtMTEuMzF6IiBmaWxsPSIjMjIyMjMyIiBvcGFjdGl5PSIwLjMiLz48L3N2Zz4='); /* Padrão de grade sutil com um toque diagonal */
+    background-repeat: repeat;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* Cabeçalho Principal */
+.main-header {
+    background-color: transparent;
+    padding: 30px 20px; /* Padding fixo */
+    width: 100%;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color-subtle);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    margin-bottom: 30px; /* Margem fixa */
+    position: relative;
+    z-index: 10;
+}
+
+.main-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-primary);
+    margin: 0;
+    font-size: 3.5em; /* Tamanho de fonte fixo */
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(106, 0, 255, 0.5), 0 0 30px rgba(0, 255, 204, 0.5);
+}
+
+.highlight-symbol {
+    color: var(--flow-gradient-end);
+    font-size: 0.8em;
+    vertical-align: middle;
+}
+
+/* Contêiner do "Canvas" do Torneio */
+.tournament-canvas {
+    background-color: rgba(27, 27, 47, 0.85);
+    border: 1px solid var(--border-color-subtle);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(106, 0, 255, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    width: 99%; /* Usar % da largura da viewport */
+    max-width: 2100px; /* Limite máximo para telas muito grandes */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex; /* Certifica que é flexbox */
+    flex-direction: column; /* Organiza o conteúdo interno em coluna */
+    align-items: center; /* Centraliza o #tournament-container */
+}
+
+/* Contêiner Principal das Semanas (dentro do canvas) */
+#tournament-container {
+    display: flex;
+    flex-wrap: nowrap; /* Impede quebra de linha */
+    justify-content: center; /* Centraliza os itens */
+    gap: 15px; /* Espaço entre os módulos */
+    padding-bottom: 20px;
+    align-items: flex-start;
+    width: 100%; /* Ocupa a largura total do canvas */
+    min-width: 1200px; /* Defina uma largura mínima para a linha de módulos */
+    overflow-x: auto; /* Permite scroll se os módulos não couberem */
+}
+
+/* Módulos de Semana (Painéis Flutuantes) */
+.flow-module {
+    flex-grow: 0; /* Não cresce */
+    flex-shrink: 0; /* Não encolhe */
+    flex-basis: 20%; /* Tenta ocupar 20% do espaço, mas min-width/max-width prevalecem */
+    max-width: 300px; /* Limite máximo para cada módulo individual */
+    min-width: 220px; /* Largura mínima para cada módulo */
+    height: auto;
+    background-color: var(--bg-module);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(var(--bg-module), var(--bg-module)),
+                      linear-gradient(135deg, var(--flow-gradient-start), var(--flow-gradient-end));
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(106, 0, 255, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    margin-bottom: 0;
+}
+
+.flow-module:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 255, 204, 0.2);
+}
+
+.flow-module .module-title {
+    font-family: 'Space Grotesk', sans-serif;
+    text-align: center;
+    color: var(--flow-gradient-end);
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.4em; /* Tamanho de fonte fixo */
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px dashed var(--border-color-subtle);
+    padding-bottom: 10px;
+    width: 100%;
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+}
+
+/* Duelos (Nós de Conexão) */
+.matches {
+    width: 100%;
+}
+
+.match {
+    background-color: var(--bg-element);
+    border-radius: 8px;
+    border: 1px solid var(--border-color-subtle);
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-out;
+}
+
+.match:last-child {
+    margin-bottom: 0;
+}
+
+.match:hover {
+    transform: scale(1.005);
+    border-color: var(--flow-gradient-start);
+}
+
+.match p {
+    margin: 4px 0 12px 0;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95em; /* Tamanho de fonte fixo */
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* Botões de Seleção de Vencedor */
+.match button {
+    background-color: var(--bg-element);
+    color: var(--text-primary);
+    padding: 8px 15px;
+    border: 1px solid var(--border-color-subtle);
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 0.85em; /* Tamanho de fonte fixo */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    transition: all 0.3s ease-in-out;
+    width: calc(100% - 10px);
+    max-width: 200px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    display: flex; /* Adicionado para alinhar nome e card de mundo */
+    justify-content: center; /* Centraliza o conteúdo dentro do botão */
+    align-items: center; /* Alinha verticalmente */
+    text-align: center; /* Centraliza o texto */
+    white-space: nowrap; /* Evita que o texto do botão quebre */
+    text-overflow: ellipsis; /* Adiciona reticências se o texto for muito longo */
+}
+
+.match button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(106, 0, 255, 0.2), rgba(0, 255, 204, 0.2));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    border-radius: 6px;
+}
+
+.match button:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.match button:hover:not(:disabled) {
+    border-color: var(--flow-gradient-end);
+    color: var(--flow-gradient-end);
+    box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+}
+
+.match button.selected-winner {
+    background: var(--winner-color);
+    border-color: var(--winner-color);
+    color: #0f0f1c;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(0, 230, 118, 0.5);
+}
+.match button.selected-winner::before {
+    opacity: 0;
+}
+
+.match button:disabled {
+    background-color: var(--disabled-color);
+    border-color: var(--disabled-color);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+.match button:disabled::before {
+    display: none;
+}
+
+/* Card de Mundo da Aliança (dentro do botão de duelo) */
+.alliance-world-card-inline {
+    background-color: rgba(0, 0, 0, 0.3); /* Um pouco mais escuro para contraste no botão */
+    color: var(--world-card-text);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.6em; /* Menor para caber no botão */
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.15);
+    margin-left: 5px; /* Espaço entre o nome e o card */
+    display: inline-block; /* Para ficar ao lado do texto */
+    vertical-align: middle; /* Alinha verticalmente */
+    flex-shrink: 0;
+}
+
+
+/* RANK FINAL (Módulo Consolidado) */
+.final-rank-module {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 38%; /* Dar mais espaço ao ranking, mas ainda fixo */
+    max-width: 420px; /* Limite máximo para o ranking */
+    min-width: 280px; /* Mínimo para o ranking */
+
+    padding: 20px 25px;
+    background-color: var(--bg-module); /* Fundo sólido para o módulo */
+    border: 3px solid transparent;
+    border-image: linear-gradient(45deg, var(--flow-gradient-end), var(--flow-gradient-start)) 1; /* Borda com gradiente */
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.4), inset 0 0 20px rgba(106, 0, 255, 0.15);
+    height: auto;
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+}
+
+.final-rank-module .module-title {
+    font-family: 'Space Grotesk', sans-serif; /* Garante a fonte correta */
+    text-align: center;
+    color: var(--flow-gradient-start); /* Cor mais visível para o título */
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.6em; /* Tamanho de fonte fixo */
+    font-weight: 600; /* Pode ser 700 para mais destaque */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(106, 0, 255, 0.4);
+    border-bottom: 2px dashed var(--border-color-subtle);
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.rank-display-container {
+    width: 100%;
+    background-color: var(--bg-element);
+    border: 1px solid var(--border-color-subtle);
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+#ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#ranking-list li {
+    background-color: var(--bg-dark);
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color-subtle);
+    font-size: 0.9em; /* Tamanho de fonte fixo */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-primary);
+    font-family: 'Bai Jamjuree', sans-serif;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Barra de progresso/vitórias visual no rank item */
+#ranking-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--bar-width); /* Agora controlada por variável CSS customizada via JS */
+    background: linear-gradient(90deg, var(--flow-gradient-start), var(--flow-gradient-end));
+    opacity: 0.2;
+    z-index: 0;
+    transition: width 0.5s ease-out;
+}
+
+/* Removido o ajuste de largura da barra com base em data-rank. O JS irá definir --bar-width */
+
+
+#ranking-list li span {
+    position: relative;
+    z-index: 1;
+}
+
+#ranking-list li span.rank-position {
+    font-weight: 700;
+    color: var(--flow-gradient-end);
+    min-width: 25px;
+    text-align: right;
+    margin-right: 8px;
+    font-size: 1em; /* Tamanho de fonte fixo */
+}
+
+/* Estilo para o Wrapper do Nome da Aliança (para flexibilidade) */
+.alliance-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-grow: 1;
+    flex-wrap: nowrap; /* Impede quebra para manter na linha */
+    white-space: nowrap; /* Evita que o nome da aliança quebre */
+    overflow: hidden; /* Oculta o texto que excede */
+    text-overflow: ellipsis; /* Adiciona "..." */
+}
+
+#ranking-list li span.alliance-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap; /* Manteve para o nome da aliança */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Card de Mundo da Aliança */
+.alliance-world-card {
+    background-color: var(--world-card-bg);
+    color: var(--world-card-text);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.65em; /* Tamanho de fonte fixo */
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+#ranking-list li span.alliance-stats {
+    color: var(--text-secondary);
+    font-size: 0.75em; /* Tamanho de fonte fixo */
+    margin-left: 8px;
+    font-weight: 400;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Destaques para o Top 3 do Rank Final */
+#ranking-list li:nth-child(1) {
+    border-color: var(--flow-gradient-end);
+    color: var(--bg-dark);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--flow-gradient-start), var(--flow-gradient-end));
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+}
+#ranking-list li:nth-child(1) span {
+    color: var(--bg-dark);
+}
+#ranking-list li:nth-child(1) span.rank-position {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+}
+#ranking-list li:nth-child(1) .alliance-world-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+#ranking-list li:nth-child(2) {
+    border-color: var(--flow-gradient-start);
+    background-color: var(--bg-element);
+    box-shadow: 0 0 12px rgba(106, 0, 255, 0.3);
+}
+#ranking-list li:nth-child(2) span.rank-position {
+    color: var(--flow-gradient-start);
+}
+#ranking-list li:nth-child(2) .alliance-world-card {
+    background-color: var(--world-card-bg);
+}
+
+#ranking-list li:nth-child(3) {
+    border-color: var(--border-color-subtle);
+    background-color: var(--bg-module);
+    box-shadow: 0 0 8px rgba(0, 255, 204, 0.15);
+}
+#ranking-list li:nth-child(3) span.rank-position {
+    color: var(--flow-gradient-end);
+}
+#ranking-list li:nth-child(3) .alliance-world-card {
+    background-color: var(--world-card-bg);
+}
+
+/* Estilo para Ícones de Troféu */
+.trophy {
+    margin-left: 6px;
+    font-size: 1.1em; /* Tamanho de fonte fixo */
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.4));
+}
+
+.trophy.gold {
+    color: var(--trophy-gold);
+}
+
+.trophy.silver {
+    color: var(--trophy-silver);
+}
+
+.trophy.bronze {
+    color: var(--trophy-bronze);
+}
