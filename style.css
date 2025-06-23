@@ -493,3 +493,8 @@ body {
 .trophy.bronze {
     color: var(--trophy-bronze);
 }
+
+/* Para esconder módulos de semanas que não são a semana atual */
+.flow-module.hidden-week {
+    display: none;
+}
