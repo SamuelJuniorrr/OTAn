@@ -19,33 +19,49 @@ const aliancasOriginal = [
 ];
 
 let aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
-let duelosRealizados = {};
+let duelosRealizados = {}; // Armazena o estado dos duelos já decididos
 let semanas = 4;
 let duelosPorSemana = 8;
-let currentWeek = 1;
+let currentWeek = 1; // Controla a semana atual que está ativa para duelos
 
-// Novo: Armazenamento global para o HTML dos duelos de cada semana
+// Armazenamento global para o HTML dos duelos de cada semana (não inseridos no DOM ainda)
 let allGeneratedMatchesHTML = {}; 
 
 document.addEventListener('DOMContentLoaded', () => {
     inicializarTorneio();
 });
 
+/**
+ * Inicializa ou reinicializa o torneio, gerando duelos e atualizando o ranking.
+ */
 function inicializarTorneio() {
     gerarDuelos(); // Gera e armazena todos os duelos internamente
-    exibirDuelosDaSemana(currentWeek); // Exibe apenas os duelos da semana inicial
-    atualizarRanking();
     
-    // Oculta o rank final e garante que os módulos de semana estejam visíveis, mas com duelos vazios inicialmente para semanas futuras
-    document.getElementById('final-ranking').classList.add('hidden-module'); // Nova classe para ocultar
+    // Popula apenas os duelos da semana inicial no DOM
+    const week1Container = document.getElementById(`week-${currentWeek}`).querySelector('.matches');
+    week1Container.innerHTML = ''; // Limpa antes de popular
+    if (allGeneratedMatchesHTML[currentWeek]) {
+        allGeneratedMatchesHTML[currentWeek].forEach(matchHTML => {
+            week1Container.innerHTML += matchHTML;
+        });
+    }
+
+    // Garante que o rank final esteja oculto
+    document.getElementById('final-ranking').classList.add('hidden-module'); 
+    
+    // Garante que todas as semanas estejam visíveis (os cards), mas com duelos vazios para semanas futuras
     for(let s = 1; s <= semanas; s++) {
-        document.getElementById(`week-${s}`).classList.remove('hidden-module'); // Garante visibilidade do card
-        if (s > currentWeek) {
-            document.getElementById(`week-${s}`).querySelector('.matches').innerHTML = ''; // Limpa duelos de semanas futuras
+        document.getElementById(`week-${s}`).classList.remove('hidden-module'); // Garante que o card da semana esteja visível
+        if (s > currentWeek) { // Se for uma semana futura, garanta que os duelos estejam limpos
+            document.getElementById(`week-${s}`).querySelector('.matches').innerHTML = ''; 
         }
     }
+    atualizarRanking();
 }
 
+/**
+ * Reseta o estado completo do torneio para o início.
+ */
 function resetarTorneio() {
     aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
     duelosRealizados = {};
@@ -145,15 +161,15 @@ function gerarDuelos() {
 
 /**
  * Cria e retorna a string HTML de um duelo.
- * As funções `onclick` são configuradas para chamar `registrarVencedor`.
+ * Adiciona atributos `data-` para facilitar a restauração do estado.
  */
 function criarElementoDueloHTML(semana, alianca1, alianca2) {
-    // Escapa aspas simples nos nomes para uso seguro no atributo onclick
+    // Escapa aspas simples nos nomes para uso seguro no atributo onclick e data-
     const alianca1NameEscaped = alianca1.nome.replace(/'/g, "\\'");
     const alianca2NameEscaped = alianca2.nome.replace(/'/g, "\\'");
 
     return `
-        <div class="match">
+        <div class="match" data-semana="${semana}" data-alianca1="${alianca1NameEscaped}" data-alianca2="${alianca2NameEscaped}">
             <p>${alianca1.nome} vs ${alianca2.nome}</p>
             <button onclick="registrarVencedor(${semana}, '${alianca1NameEscaped}', '${alianca2NameEscaped}', '${alianca1NameEscaped}', this)">${alianca1.nome} <span class="alliance-world-card-inline">${alianca1.world}</span></button>
             <button onclick="registrarVencedor(${semana}, '${alianca1NameEscaped}', '${alianca2NameEscaped}', '${alianca2NameEscaped}', this)">${alianca2.nome} <span class="alliance-world-card-inline">${alianca2.world}</span></button>
@@ -162,28 +178,46 @@ function criarElementoDueloHTML(semana, alianca1, alianca2) {
 }
 
 /**
- * Insere os duelos de uma semana específica no DOM e limpa as demais semanas.
+ * Restaura o estado (vencedor selecionado, botões desabilitados) dos duelos de uma semana.
+ * É chamada ao carregar a semana.
  */
-function exibirDuelosDaSemana(weekNum) {
-    for (let s = 1; s <= semanas; s++) {
-        const weekContainer = document.getElementById(`week-${s}`).querySelector('.matches');
-        weekContainer.innerHTML = ''; // Limpa quaisquer duelos existentes
+function restaurarEstadoDuelos(weekNum) {
+    const weekId = `week-${weekNum}`;
+    const weekContainer = document.getElementById(weekId).querySelector('.matches');
+    const matchesInWeek = weekContainer.querySelectorAll('.match');
 
-        if (s === weekNum) {
-            // Insere os duelos da semana atual
-            if (allGeneratedMatchesHTML[weekNum]) {
-                allGeneratedMatchesHTML[weekNum].forEach(matchHTML => {
-                    weekContainer.innerHTML += matchHTML;
-                });
-            }
-        }
-        // As semanas futuras já são limpas em inicializarTorneio/resetarTorneio
-        // para garantir que estejam vazias se não forem a currentWeek
+    if (!duelosRealizados[weekId]) {
+        return; // Nenhum duelo registrado para esta semana
     }
+
+    matchesInWeek.forEach(matchDiv => {
+        const aliancaNome1 = matchDiv.getAttribute('data-alianca1');
+        const aliancaNome2 = matchDiv.getAttribute('data-alianca2');
+        const dueloKey = [aliancaNome1, aliancaNome2].sort().join('-');
+
+        const vencedorNome = duelosRealizados[weekId][dueloKey];
+
+        if (vencedorNome) { // Se um vencedor está registrado para este duelo
+            const buttons = matchDiv.querySelectorAll('button');
+            buttons.forEach(button => {
+                // Obtém o nome da aliança do texto do botão (antes do world card)
+                const buttonAllianceName = button.textContent.trim().split('#')[0].trim(); 
+                if (buttonAllianceName === vencedorNome) {
+                    button.classList.add('selected-winner');
+                }
+                button.disabled = true; // Desabilita todos os botões neste duelo concluído
+            });
+        }
+    });
 }
 
 
 function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, clickedButton) {
+    // Apenas permite registrar se o duelo pertence à semana ativa
+    if (semana !== currentWeek) {
+        return; 
+    }
+
     const dueloKey = [aliancaNome1, aliancaNome2].sort().join('-');
     const weekId = `week-${semana}`;
 
@@ -191,16 +225,18 @@ function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, cli
         duelosRealizados[weekId] = {};
     }
 
+    // Evita registrar o mesmo duelo múltiplas vezes
     if (duelosRealizados[weekId][dueloKey] !== undefined) {
-        return;
+        return; 
     }
 
+    // Desabilita os botões do duelo e marca o vencedor
     const parentDiv = clickedButton.closest('.match');
     const buttons = parentDiv.querySelectorAll('button');
     buttons.forEach(btn => btn.disabled = true);
-
     clickedButton.classList.add('selected-winner');
 
+    // Atualiza pontuação e vitórias/derrotas das alianças
     const aliancaVencedora = aliancas.find(a => a.nome === vencedorNome);
     const aliancaPerdedora = aliancas.find(a => a.nome === (vencedorNome === aliancaNome1 ? aliancaNome2 : aliancaNome1));
 
@@ -213,6 +249,7 @@ function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, cli
         aliancaPerdedora.pts += 1;
     }
 
+    // Registra o duelo como realizado para esta semana
     duelosRealizados[weekId][dueloKey] = vencedorNome;
 
     atualizarRanking();
@@ -225,7 +262,17 @@ function registrarVencedor(semana, aliancaNome1, aliancaNome2, vencedorNome, cli
         // Se todos os duelos da semana ativa foram concluídos, avança para a próxima
         if (currentWeek < semanas) {
             currentWeek++;
-            exibirDuelosDaSemana(currentWeek); // Exibe os duelos da próxima semana
+            const nextWeekContainer = document.getElementById(`week-${currentWeek}`).querySelector('.matches');
+            nextWeekContainer.innerHTML = ''; // Limpa antes de popular
+
+            // Popula os duelos da próxima semana
+            if (allGeneratedMatchesHTML[currentWeek]) {
+                allGeneratedMatchesHTML[currentWeek].forEach(matchHTML => {
+                    nextWeekContainer.innerHTML += matchHTML;
+                });
+            }
+            // Não é necessário chamar restaurarEstadoDuelos para a próxima semana aqui
+            // porque ela estará vazia de duelos registrados
         } else {
             // Todas as semanas foram concluídas, exibe o ranking final
             document.getElementById('final-ranking').classList.remove('hidden-module');
