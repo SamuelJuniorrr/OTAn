@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaveamento VS - Dark War Survival</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #111;
+      color: #f5c842;
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 40px;
+      color: #f00;
+      text-shadow: 0 0 10px #f5c842;
+    }
+    .bracket {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .match {
+      border: 1px solid #f5c842;
+      padding: 10px;
+      width: 200px;
+      background-color: #222;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #f5c84233;
+    }
+    .match button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      background: #f00;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .match button:hover {
+      background: #b30000;
+    }
+    .round {
+      margin-bottom: 40px;
+    }
+    button.reset {
+      margin-top: 30px;
+      background-color: #444;
+      border: 1px solid #f5c842;
+      padding: 10px 20px;
+      color: #f5c842;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chaveamento VS - Dark War Survival</h1>
+  <div id="bracket"></div>
+  <button class="reset" onclick="resetBracket()">Resetar Chaveamento</button>
+
+  <script>
+    const alianças = [
+      "OTAn", "Dragões", "Titãs", "Legião", "Império", "Fênix", "Mercenários", "Gladiadores",
+      "Vikings", "Templários", "Spartans", "Renegados", "Valhalla", "Guardians", "Predadores", "Anarquia"
+    ];
+
+    let rodadas = [];
+
+    function criarRodada(duelos, rodadaIndex) {
+      const rodada = document.createElement("div");
+      rodada.className = "round";
+
+      duelos.forEach((duelo, i) => {
+        const match = document.createElement("div");
+        match.className = "match";
+
+        const [a, b] = duelo;
+        const titulo = document.createElement("div");
+        titulo.innerHTML = `<strong>Duelo ${i + 1}:</strong><br>${a} x ${b}`;
+
+        const btnA = document.createElement("button");
+        btnA.innerText = a;
+        btnA.onclick = () => selecionarVencedor(rodadaIndex, i, a);
+
+        const btnB = document.createElement("button");
+        btnB.innerText = b;
+        btnB.onclick = () => selecionarVencedor(rodadaIndex, i, b);
+
+        match.appendChild(titulo);
+        match.appendChild(btnA);
+        match.appendChild(btnB);
+        rodada.appendChild(match);
+      });
+
+      document.getElementById("bracket").appendChild(rodada);
+    }
+
+    function selecionarVencedor(rodadaIndex, dueloIndex, vencedor) {
+      rodadas[rodadaIndex][dueloIndex].vencedor = vencedor;
+      gerarProximaRodada();
+    }
+
+    function gerarProximaRodada() {
+      const ultima = rodadas[rodadas.length - 1];
+      if (ultima.some(d => !d.vencedor)) return;
+
+      const novaRodada = [];
+      for (let i = 0; i < ultima.length; i += 2) {
+        novaRodada.push([ultima[i].vencedor, ultima[i + 1].vencedor]);
+      }
+
+      if (novaRodada.length > 0) {
+        rodadas.push(novaRodada.map(p => ({ luta: p, vencedor: null })));
+        criarRodada(novaRodada, rodadas.length - 1);
+      }
+    }
+
+    function resetBracket() {
+      rodadas = [];
+      document.getElementById("bracket").innerHTML = "";
+      const primeiraRodada = [];
+      for (let i = 0; i < alianças.length; i += 2) {
+        primeiraRodada.push({ luta: [alianças[i], alianças[i + 1]], vencedor: null });
+      }
+      rodadas.push(primeiraRodada);
+      criarRodada(primeiraRodada.map(p => p.luta), 0);
+    }
+
+    resetBracket();
+  </script>
+</body>
+</html>
