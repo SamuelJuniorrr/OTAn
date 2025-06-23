@@ -3,37 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chaveamento Torneio 16 Alianças</title>
+  <title>Torneio OTAn - Ranking de Alianças</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Chaveamento do Torneio - 16 Alianças</h1>
-  
-  <div id="tournament">
-    <!-- Semana 1 -->
-    <div class="round" id="round-1">
-      <h2>Semana 1</h2>
-      <!-- Os duelos serão gerados via JavaScript -->
-    </div>
+  <h1>Torneio - Classificação Semanal</h1>
 
-    <!-- Semana 2 -->
-    <div class="round" id="round-2">
-      <h2>Semana 2</h2>
-    </div>
-
-    <!-- Semana 3 -->
-    <div class="round" id="round-3">
-      <h2>Semana 3</h2>
-    </div>
-
-    <!-- Semana 4 -->
-    <div class="round" id="round-4">
-      <h2>Semana 4 (Final)</h2>
-    </div>
-
-    <!-- Resultado final -->
-    <div id="final-result" style="margin-top:2rem; font-weight:bold; font-size: 1.2rem; text-align: center;"></div>
+  <div id="ranking-container">
+    <h2>Ranking Atual</h2>
+    <ol id="ranking-list"></ol>
   </div>
+
+  <div id="semana-info">
+    <h2 id="semana-title">Semana 1</h2>
+  </div>
+
+  <div id="confrontos"></div>
+
+  <button id="proxima-semana" onclick="proximaSemana()">Próxima Semana</button>
 
   <script src="script.js"></script>
 </body>
