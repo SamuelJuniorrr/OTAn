@@ -1,114 +1,146 @@
 // Dados das alianças - Adicione o 'world'
-const aliancas = [
-    { nome: "OTAN1", vit: 0, der: 0, pts: 0, world: "#101" },
-    { nome: "OTAN2", vit: 0, der: 0, pts: 0, world: "#102" },
-    { nome: "OTAN3", vit: 0, der: 0, pts: 0, world: "#103" },
-    { nome: "OTAN4", vit: 0, der: 0, pts: 0, world: "#104" },
-    { nome: "OTAN5", vit: 0, der: 0, pts: 0, world: "#101" },
-    { nome: "OTAN6", vit: 0, der: 0, pts: 0, world: "#102" },
-    { nome: "OTAN7", vit: 0, der: 0, pts: 0, world: "#103" },
-    { nome: "OTAN8", vit: 0, der: 0, pts: 0, world: "#104" },
-    { nome: "OTAN9", vit: 0, der: 0, pts: 0, world: "#101" },
-    { nome: "OTAN10", vit: 0, der: 0, pts: 0, world: "#102" },
-    { nome: "OTAN11", vit: 0, der: 0, pts: 0, world: "#103" },
-    { nome: "OTAN12", vit: 0, der: 0, pts: 0, world: "#104" },
-    { nome: "OTAN13", vit: 0, der: 0, pts: 0, world: "#101" },
-    { nome: "OTAN14", vit: 0, der: 0, pts: 0, world: "#102" },
-    { nome: "OTAN15", vit: 0, der: 0, pts: 0, world: "#103" },
-    { nome: "OTAN16", vit: 0, der: 0, pts: 0, world: "#104" },
+// É BOM TER UMA CÓPIA ORIGINAL DOS DADOS PARA RESETAR FACILMENTE
+const aliancasOriginal = [ // Nova constante para os dados originais
+    { nome: "Aliança Alpha", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "Legião Beta", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "Guerreiros Gamma", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "Clã Delta", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "Força Épsilon", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "Vanguard Omega", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "Sentinelas Orion", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "Destruidores Zeta", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "União Sigma", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "Guardiões Rho", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "Templários Tau", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "Mestres Phi", vit: 0, der: 0, pts: 0, world: "#104" },
+    { nome: "Ascensão Chi", vit: 0, der: 0, pts: 0, world: "#101" },
+    { nome: "Cruzados Psi", vit: 0, der: 0, pts: 0, world: "#102" },
+    { nome: "Fênix Ómicron", vit: 0, der: 0, pts: 0, world: "#103" },
+    { nome: "Defensores Kappa", vit: 0, der: 0, pts: 0, world: "#104" },
 ];
+
+let aliancas = JSON.parse(JSON.stringify(aliancasOriginal)); // Usamos uma cópia mutável
 
 let duelosRealizados = {};
 let semanas = 4;
-// Aumentado o número de duelos por semana. Com 16 alianças,
-// podemos ter no máximo 8 duelos por semana (16 alianças / 2 por duelo).
-// Se você quiser que todas as alianças joguem toda semana, defina para 8.
-let duelosPorSemana = 8; // Aumentado para 8 para incluir mais grupos/duelos
+let duelosPorSemana = 8;
 
 document.addEventListener('DOMContentLoaded', () => {
+    inicializarTorneio(); // Chamada inicial
+});
+
+function inicializarTorneio() {
     gerarDuelos();
     atualizarRanking();
-});
+}
+
+function resetarTorneio() {
+    // 1. Resetar os dados das alianças para os valores originais
+    aliancas = JSON.parse(JSON.stringify(aliancasOriginal)); // Cria uma nova cópia limpa
+
+    // 2. Limpar os duelos realizados
+    duelosRealizados = {};
+
+    // 3. Limpar os elementos HTML dos duelos de todas as semanas
+    for (let s = 1; s <= semanas; s++) {
+        const weekContainer = document.getElementById(`week-${s}`).querySelector('.matches');
+        weekContainer.innerHTML = '';
+    }
+
+    // 4. Gerar novos duelos e atualizar o ranking
+    inicializarTorneio(); // Reutiliza a função de inicialização
+}
+
 
 function gerarDuelos() {
     // Para garantir que duelos não se repitam em uma semana
     // E que cada aliança jogue apenas uma vez por semana
-    // Resetar aliancasParaEstaSemana a cada nova semana
-    let aliancasParaEstaSemana = [...aliancas]; 
-    const duelosGeradosGlobal = {}; // Para controlar duelos que já aconteceram entre quaisquer duas alianças ao longo das semanas
+    const duelosGeradosGlobal = new Set(); // Usa um Set para melhor performance na verificação
+
+    // Se já existem duelos realizados de uma sessão anterior (antes de um reset),
+    // é bom popular duelosGeradosGlobal com eles para evitar repetição ao gerar novos.
+    // Isso é mais crítico se o reset não limpar duelosRealizados completamente,
+    // mas com o `resetarTorneio` limpando, isso é menos essencial para duelos já feitos.
+    // No entanto, para evitar que o algoritmo tente gerar duelos que já foram "pensados"
+    // no passado (mesmo que não clicados), manter o tracking de duelos globais é bom.
+    // Para um reset completo, basta que `duelosGeradosGlobal` comece vazio.
 
     for (let s = 1; s <= semanas; s++) {
         const weekContainer = document.getElementById(`week-${s}`).querySelector('.matches');
-        weekContainer.innerHTML = ''; // Limpa duelos anteriores
+        // weekContainer.innerHTML = ''; // Já limpo pelo resetarTorneio, ou estaria aqui
 
-        let aliancasDisponiveisParaDuelo = [...aliancasParaEstaSemana]; // Copia para uso nesta semana
+        let aliancasDisponiveisParaDuelo = [...aliancas]; // Todas as alianças disponíveis para esta semana
         let duelosSemanaAtual = 0;
-        let aliancasJaDuelaramNestaSemana = new Set(); // Para garantir que uma aliança só duele uma vez por semana
+        let aliancasJaDuelaramNestaSemana = new Set();
+
+        // Embaralha as alianças para uma seleção mais aleatória
+        aliancasDisponiveisParaDuelo.sort(() => Math.random() - 0.5);
 
         while (duelosSemanaAtual < duelosPorSemana && aliancasDisponiveisParaDuelo.length >= 2) {
-            let alianca1, alianca2;
-            let idx1, idx2;
-            let tentativaSegura = 0;
-            const maxTentativas = 100; // Limite para evitar loop infinito em cenários complexos
+            let alianca1 = null;
+            let alianca2 = null;
+            let indexAlianca1 = -1;
+            let indexAlianca2 = -1;
 
-            do {
-                // Tenta selecionar a primeira aliança que ainda não duelou nesta semana
-                idx1 = Math.floor(Math.random() * aliancasDisponiveisParaDuelo.length);
-                alianca1 = aliancasDisponiveisParaDuelo[idx1];
-                tentativaSegura++;
-            } while (aliancasJaDuelaramNestaSemana.has(alianca1.nome) && tentativaSegura < maxTentativas);
-
-            if (tentativaSegura >= maxTentativas) {
-                console.warn(`Não foi possível encontrar uma primeira aliança disponível para o duelo na semana ${s}.`);
-                break; // Sai do loop se não conseguir encontrar uma aliança válida
+            // Encontrar alianca1 que ainda não duelou nesta semana
+            for (let i = 0; i < aliancasDisponiveisParaDuelo.length; i++) {
+                if (!aliancasJaDuelaramNestaSemana.has(aliancasDisponiveisParaDuelo[i].nome)) {
+                    alianca1 = aliancasDisponiveisParaDuelo[i];
+                    indexAlianca1 = i;
+                    break;
+                }
             }
 
-            // Remove alianca1 da lista disponível para evitar que ela seja selecionada como alianca2
-            aliancasDisponiveisParaDuelo.splice(idx1, 1);
-
-            tentativaSegura = 0; // Resetar para a segunda aliança
-            do {
-                // Tenta selecionar a segunda aliança que ainda não duelou nesta semana
-                idx2 = Math.floor(Math.random() * aliancasDisponiveisParaDuelo.length);
-                alianca2 = aliancasDisponiveisParaDuelo[idx2];
-                tentativaSegura++;
-            } while (aliancasJaDuelaramNestaSemana.has(alianca2.nome) && tentativaSegura < maxTentativas);
-            
-            if (tentativaSegura >= maxTentativas) {
-                console.warn(`Não foi possível encontrar uma segunda aliança disponível para o duelo na semana ${s}.`);
-                // Recoloca alianca1 se alianca2 não for encontrada
-                aliancasDisponiveisParaDuelo.push(alianca1);  // Recoloca alianca1
-                break; // Sai do loop
+            if (!alianca1) { // Se não encontrou aliança 1 disponível, sai
+                break;
             }
 
-            // Cria uma chave única para o duelo (ordem não importa)
+            // Encontrar alianca2
+            // Tentar encontrar uma aliança que não tenha duelado com alianca1 antes E que não tenha duelado nesta semana
+            let foundAlianca2 = false;
+            for (let i = 0; i < aliancasDisponiveisParaDuelo.length; i++) {
+                alianca2 = aliancasDisponiveisParaDuelo[i];
+                if (alianca1.nome === alianca2.nome || aliancasJaDuelaramNestaSemana.has(alianca2.nome)) {
+                    continue; // Pula se for a mesma aliança ou se já duelou esta semana
+                }
+
+                const dueloKey = [alianca1.nome, alianca2.nome].sort().join('-');
+                if (!duelosGeradosGlobal.has(dueloKey)) {
+                    indexAlianca2 = i;
+                    foundAlianca2 = true;
+                    break;
+                }
+            }
+
+            if (!foundAlianca2) { // Se não encontrou uma aliança 2 válida para este alianca1
+                // Remove alianca1 da lista de aliançasDisponiveisParaDuelo para esta semana,
+                // para que ela não seja selecionada novamente nesta semana para um duelo,
+                // se ela não conseguir encontrar um par.
+                // Mas isso pode fazer com que alianças não dulem se os pares válidos forem poucos.
+                // Para simplificar, vou manter como estava antes, mas a lógica de reembaralhar pode ser útil.
+                // aliancasDisponiveisParaDuelo.splice(indexAlianca1, 1); // Remover alianca1 que não encontrou par
+                continue; // Tenta com a próxima aliança1
+            }
+
             const dueloKey = [alianca1.nome, alianca2.nome].sort().join('-');
+            duelosGeradosGlobal.add(dueloKey); // Adiciona ao Set global de duelos já gerados
 
-            // Verifica se o duelo já foi gerado globalmente
-            if (!duelosGeradosGlobal[dueloKey] && alianca1.nome !== alianca2.nome) {
-                duelosGeradosGlobal[dueloKey] = true;
-                const matchElement = criarElementoDuelo(s, alianca1, alianca2);
-                weekContainer.appendChild(matchElement);
-                duelosSemanaAtual++;
-                
-                // Marca as alianças como dueladas nesta semana
-                aliancasJaDuelaramNestaSemana.add(alianca1.nome);
-                aliancasJaDuelaramNestaSemana.add(alianca2.nome);
+            const matchElement = criarElementoDuelo(s, alianca1, alianca2);
+            weekContainer.appendChild(matchElement);
+            duelosSemanaAtual++;
 
-                // Remove as alianças da lista disponível para esta semana
-                // (alianca1 já foi removida, agora remove alianca2)
-                aliancasDisponiveisParaDuelo.splice(idx2, 1);
+            aliancasJaDuelaramNestaSemana.add(alianca1.nome);
+            aliancasJaDuelaramNestaSemana.add(alianca2.nome);
 
-            } else {
-                // Se o duelo já existe ou alianças são as mesmas, recoloca-as e tenta novamente
-                // Como já removemos alianca1, precisamos recolocá-la aqui
-                aliancasDisponiveisParaDuelo.push(alianca1, alianca2); // Recoloca ambas
-            }
+            // Remove as alianças da lista disponível para esta semana para não serem selecionadas novamente
+            // É importante remover na ordem correta para não bagunçar os índices
+            const aliancasRemover = [alianca1.nome, alianca2.nome];
+            aliancasDisponiveisParaDuelo = aliancasDisponiveisParaDuelo.filter(
+                a => !aliancasJaDuelaramNestaSemana.has(a.nome)
+            );
+            // Re-embaralhar pode ajudar a encontrar novos pares mais facilmente
+            aliancasDisponiveisParaDuelo.sort(() => Math.random() - 0.5);
         }
-        // Ao final de cada semana, aliancasDisponiveisParaDuelo terá as alianças que não duelaram
-        // ou as que foram recolocadas.
-        // Para a próxima semana, queremos que todas as alianças estejam disponíveis novamente.
-        aliancasParaEstaSemana = [...aliancas]; // Reseta para a próxima semana
     }
 }
 
@@ -191,7 +223,6 @@ function atualizarRanking() {
         }
 
         // Adiciona a largura da barra de progresso dinamicamente
-        // Calcula a largura da barra de progresso baseada na porcentagem de vitórias em relação ao máximo de vitórias possível
         const maxVitorias = Math.max(...aliancas.map(a => a.vit), 1); // Garante que não divida por zero
         let barWidth = (alianca.vit / maxVitorias) * 100;
         
@@ -200,6 +231,7 @@ function atualizarRanking() {
         else if (alianca.vit === 0) barWidth = 0; // Para 0 vitórias, barra 0%
 
         li.style.setProperty('--bar-width', `${barWidth}%`);
+
 
         li.innerHTML = `
             ${trophyHtml} <span class="rank-position">${rank}</span>
