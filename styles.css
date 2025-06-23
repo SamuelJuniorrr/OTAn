@@ -1,27 +1,97 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-   acket {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px;
-}
-
-.round {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #f4f4f4;
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+#tournament-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permite rolagem horizontal se muitas semanas */
+}
+
+.week {
+    flex-shrink: 0; /* Impede que as semanas encolham */
+    min-width: 250px; /* Largura mínima para cada semana */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.week h2 {
+    text-align: center;
+    color: #555;
+    margin-top: 0;
 }
 
 .match {
-    background-color: #fff;
-    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
     padding: 10px;
-    margin: 10px;
-    text-align: center;
-    width: 150px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-button {
-    margin-top: 10px;
+.match p {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.match button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.match button:hover {
+    background-color: #45a049;
+}
+
+.match button.selected-winner {
+    background-color: #2196F3;
+}
+
+.match button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#final-ranking ul {
+    list-style: none;
+    padding: 0;
+}
+
+#final-ranking li {
+    background-color: #e6f7ff;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    border: 1px solid #b3e0ff;
+}
+
+/* Estilo para alianças que não venceram (para desabilitar botões) */
+.alliance-loser {
+    opacity: 0.6;
+    pointer-events: none; /* Impede cliques em alianças perdedoras */
 }
