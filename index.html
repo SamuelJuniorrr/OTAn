@@ -2,50 +2,31 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Torneio VS - OTAn</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1><span class="highlight">Torneio VS</span> - OTAn</h1>
+    <h1>Torneio VS - <span class="highlight">OTAn</span></h1>
   </header>
 
   <main class="container">
-    <section id="input-ranking" class="card">
-      <h2>🔧 Insira o Ranking Inicial</h2>
-      <form id="ranking-form">
-        <div id="ranking-inputs" class="grid-inputs"></div>
-        <button type="submit" class="btn-primary">Iniciar Torneio</button>
-      </form>
+    <section class="card">
+      <h2>Ranking Inicial</h2>
+      <div class="ranking-grid" id="ranking-inputs"></div>
+      <button class="btn" onclick="iniciarTorneio()">Iniciar Torneio</button>
     </section>
 
-    <section id="ranking-atual" class="card hidden">
-      <h2>🏆 Ranking Atual</h2>
-      <ol id="ranking-list" class="ranking-list"></ol>
+    <section class="card" id="confrontos-section" style="display:none;">
+      <h2>Confrontos Semana <span id="semana-num">1</span></h2>
+      <div id="confrontos"></div>
     </section>
 
-    <section id="confrontos-semana" class="card hidden">
-      <h2>⚔️ Confrontos - <span id="semana-num">Semana 1</span></h2>
-      <div id="confrontos-container" class="confrontos-grid"></div>
-    </section>
-
-    <section id="simulacao-ranking" class="card hidden">
-      <h2>🔮 Simulação de Ranking da Próxima Semana</h2>
-      <ol id="ranking-previsto" class="ranking-list"></ol>
-      <button id="btn-confirmar" class="btn-primary">Confirmar Semana</button>
-    </section>
-
-    <section id="historico-semanas" class="card hidden">
-      <h2>📜 Histórico de Vitórias</h2>
-      <div id="historico-list"></div>
-    </section>
-
-    <section id="grafico-otan-section" class="card hidden">
-      <h2>📈 Trajetória da OTAn</h2>
-      <canvas id="grafico-otan" height="250"></canvas>
+    <section class="card" id="ranking-section" style="display:none;">
+      <h2>Ranking Atual</h2>
+      <ol class="ranking-list" id="ranking-atual"></ol>
     </section>
   </main>
 
