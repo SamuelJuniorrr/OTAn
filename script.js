@@ -50,6 +50,7 @@ const tournamentBracket = {
         { id: "W3M1", teams: ["W2M1_WIN", "W2M2_WIN"] }, // Leva ao jogo de 1º/2º lugar
         { id: "W3M2", teams: ["W2M3_WIN", "W2M4_WIN"] }, // Leva ao jogo de 1º/2º lugar
         // Caminho para 5º-8º lugares (perdedores de W2M1-W2M4 jogando vencedores de W2M5-W2M8)
+        // Este é um caminho comum para preencher um chaveamento de consolação para 16 equipes.
         { id: "W3M3", teams: ["W2M1_LOSE", "W2M5_WIN"] }, // Perdedor W2M1 vs Vencedor W2M5
         { id: "W3M4", teams: ["W2M2_LOSE", "W2M6_WIN"] },
         { id: "W3M5", teams: ["W2M3_LOSE", "W2M7_WIN"] },
@@ -80,8 +81,8 @@ const tournamentBracket = {
 
 // Variáveis de estado do torneio
 let aliancas = JSON.parse(JSON.stringify(aliancasOriginal));
-// duelosRealizados agora armazena resultados por matchId, e inclui vencedor/perdedor e os jogadores
-let duelosRealizados = {}; // { "week-1": { "W1M1": { winner: "AllianceX", loser: "AllianceY", players: ["AllianceX", "AllianceY"] } }, ... }
+// duelosRealizados agora armazena resultados por matchId, e inclui vencedor/perdedor
+let duelosRealizados = {}; // { "week-1": { "W1M1": { winner: "AllianceX", loser: "AllianceY" } }, ... }
 let semanas = Object.keys(tournamentBracket).length; // Número total de semanas baseado na chave
 let duelosPorSemana = aliancasOriginal.length / 2; // (16 alianças / 2 = 8 duelos)
 let currentWeek = 1; // A semana atual ativa para registro de resultados
@@ -251,8 +252,7 @@ function gerarDuelosParaSemana(weekNum) {
             duelosGeradosParaEstaSemana.push(matchHTML);
         } else {
             // Se um participante não pode ser resolvido (ex: partida anterior não jogada),
-            // podemos adicionar um placeholder ou simplesmente não gerar o duelo ainda.
-            // Por enquanto, não geramos o HTML se as dependências não estão prontas.
+            // não geramos o HTML para este duelo ainda. Ele será gerado quando as dependências forem resolvidas.
             console.log(`Duelo ${matchDef.id} (Semana ${weekNum}) não gerado: participantes não resolvidos (${matchDef.teams[0]}, ${matchDef.teams[1]})`);
         }
     });
@@ -340,24 +340,25 @@ function registrarVencedor(semana, matchId, aliancaNome1, aliancaNome2, vencedor
         aliancaPerdedora.pts += 1; // Ponto de participação ou derrota
     }
 
-    // Registra o resultado completo do duelo (vencedor, perdedor e os participantes originais)
+    // Registra o resultado completo do duelo (vencedor, perdedor)
     duelosRealizados[weekId][matchId] = {
         winner: vencedorNome,
         loser: (vencedorNome === aliancaNome1 ? aliancaNome2 : aliancaNome1),
-        players: [aliancaNome1, aliancaNome2] // Para facilitar a identificação futura
     };
 
     atualizarRanking();
     salvarEstado();
 
-    // Verifica se todos os duelos da *semana ativa atual* foram concluídos
-    const totalMatchesDefinedForCurrentWeek = tournamentBracket[currentWeek] ? tournamentBracket[currentWeek].length : 0;
+    // Verifica se todos os duelos que *deveriam* ser gerados para a semana atual foram concluídos
+    // Contamos os duelos que foram de fato gerados e estão no DOM (allGeneratedMatchesHTML)
+    const totalMatchesGeneratedForCurrentWeek = allGeneratedMatchesHTML[currentWeek] ? allGeneratedMatchesHTML[currentWeek].length : 0;
     const completedMatchesInCurrentWeek = Object.keys(duelosRealizados[`week-${currentWeek}`] || {}).length;
 
-    if (completedMatchesInCurrentWeek === totalMatchesDefinedForCurrentWeek) {
+    if (completedMatchesInCurrentWeek === totalMatchesGeneratedForCurrentWeek) {
         if (currentWeek < semanas) {
             currentWeek++;
-            // Regenera os duelos da PRÓXIMA semana com base nos resultados agora completos da semana atual
+            
+            // Força a regeneração dos duelos da PRÓXIMA semana para que dependências sejam resolvidas
             gerarDuelosParaSemana(currentWeek); 
 
             const nextWeekContainer = document.getElementById(`week-${currentWeek}`).querySelector('.matches');
