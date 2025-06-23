@@ -1,68 +1,76 @@
-const rankingInputs = document.getElementById("ranking-inputs");
-const confrontosDiv = document.getElementById("confrontos");
-const rankingList = document.getElementById("ranking-atual");
-const confrontosSection = document.getElementById("confrontos-section");
-const rankingSection = document.getElementById("ranking-section");
+document.addEventListener('DOMContentLoaded', () => {
+    const round1 = document.getElementById('round1');
+    const round2 = document.getElementById('round2');
+    const round3 = document.getElementById('round3');
+    const round4 = document.getElementById('round4');
 
-let ranking = [];
-let semana = 1;
+    // Exemplo de dados iniciais
+    const alliances = [
+        'Aliança A', 'Aliança B', 'Aliança C', 'Aliança D',
+        'Aliança E', 'Aliança F', 'Aliança G', 'Aliança H',
+        'Aliança I', 'Aliança J', 'Aliança K', 'Aliança L',
+        'Aliança M', 'Aliança N', 'Aliança O', 'Aliança P'
+    ];
 
-// Gera inputs para inserir os 16 nomes
-for (let i = 1; i <= 16; i++) {
-  const input = document.createElement("input");
-  input.placeholder = `Posição ${i}`;
-  rankingInputs.appendChild(input);
-}
+    let results = {
+        round1: [],
+        round2: [],
+        round3: [],
+        round4: []
+    };
 
-function iniciarTorneio() {
-  const inputs = rankingInputs.querySelectorAll("input");
-  ranking = Array.from(inputs).map(i => i.value.trim()).filter(v => v);
-  if (ranking.length !== 16) {
-    alert("Preencha os 16 nomes das alianças.");
-    return;
-  }
-  renderRanking();
-  gerarConfrontos();
-  confrontosSection.style.display = 'block';
-  rankingSection.style.display = 'block';
-}
+    function createMatch(alliance1, alliance2, round) {
+        const matchDiv = document.createElement('div');
+        matchDiv.className = 'match';
+        matchDiv.innerHTML = `
+            <div>${alliance1}</div>
+            <div>vs</div>
+            <div>${alliance2}</div>
+            <button onclick="selectWinner('${alliance1}', '${alliance2}', '${round}')">Selecionar Vencedor</button>
+        `;
+        return matchDiv;
+    }
 
-function gerarConfrontos() {
-  confrontosDiv.innerHTML = "";
-  for (let i = 0; i < ranking.length; i += 2) {
-    const card = document.createElement("div");
-    card.className = "match-card";
+    function populateRound(roundElement, alliances) {
+        roundElement.innerHTML = ''; // Limpa os confrontos anteriores
+        for (let i = 0; i < alliances.length; i += 2) {
+            const match = createMatch(alliances[i], alliances[i + 1], roundElement.id);
+            roundElement.appendChild(match);
+        }
+    }
 
-    const team1 = document.createElement("div");
-    team1.className = "team";
-    team1.textContent = ranking[i];
+    function selectWinner(alliance1, alliance2, round) {
+        const winner = prompt(`Quem venceu? ${alliance1} ou ${alliance2}`);
+        if (winner === alliance1 || winner === alliance2) {
+            alert(`Vencedor: ${winner}`);
+            updateNextRound(winner, round);
+        } else {
+            alert('Seleção inválida.');
+        }
+    }
 
-    const team2 = document.createElement("div");
-    team2.className = "team";
-    team2.textContent = ranking[i + 1];
+    function updateNextRound(winner, round) {
+        const nextRound = getNextRound(round);
+        results[round].push(winner);
+        if (results[round].length === 8) {
+            populateRound(document.getElementById(nextRound), results[round]);
+            results[round] = [];
+        }
+    }
 
-    team1.onclick = () => marcarVencedor(card, team1, team2);
-    team2.onclick = () => marcarVencedor(card, team2, team1);
+    function getNextRound(currentRound) {
+        switch (currentRound) {
+            case 'round1':
+                return 'round2';
+            case 'round2':
+                return 'round3';
+            case 'round3':
+                return 'round4';
+            default:
+                return null;
+        }
+    }
 
-    card.appendChild(team1);
-    card.appendChild(document.createTextNode("vs"));
-    card.appendChild(team2);
-
-    confrontosDiv.appendChild(card);
-  }
-}
-
-function marcarVencedor(card, vencedor, perdedor) {
-  vencedor.classList.add("selected");
-  perdedor.classList.remove("selected");
-}
-
-function renderRanking() {
-  rankingList.innerHTML = "";
-  ranking.forEach((nome, i) => {
-    const li = document.createElement("li");
-    li.textContent = `${i + 1}º - ${nome}`;
-    if (nome.toUpperCase() === "OTAN") li.classList.add("highlight");
-    rankingList.appendChild(li);
-  });
-}
+    // Populando a primeira rodada com os dados iniciais
+    populateRound(round1, alliances);
+});
