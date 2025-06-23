@@ -213,3 +213,43 @@ function renderHistorico() {
   historico.forEach(item => {
     const div = document.createElement("div");
     div.innerHTML = `<strong>Semana ${item.semana}:</strong><br>`;
+    for(let i = 0; i < item.resultados.length; i += 2) {
+      const vencedor = item.resultados[i];
+      const perdedor = item.confrontos[i] === vencedor ? item.confrontos[i + 1] : item.confrontos[i];
+      div.innerHTML += `${vencedor} venceu ${perdedor}<br>`;
+    }
+    historicoDiv.appendChild(div);
+  });
+}
+
+// Desenha gráfico da trajetória da OTAn usando Chart.js
+function desenharGraficoOTAn() {
+  const labels = Array.from({length: trajetoriaOTAn.length}, (_, i) => `Semana ${i + 1}`);
+
+  // Posições invertidas para o eixo Y: 1 no topo
+  const dadosInvertidos = trajetoriaOTAn.map(pos => 17 - pos);
+
+  if(graficoOTAn) graficoOTAn.destroy();
+
+  graficoOTAn = new Chart(ctxGrafico, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Posição OTAn (1º melhor)',
+        data: dadosInvertidos,
+        fill: false,
+        borderColor: '#ffd700',
+        backgroundColor: '#ffd700',
+        tension: 0.3,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        borderWidth: 3,
+        pointBackgroundColor: '#ffd700',
+        pointBorderColor: '#fff'
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          reverse: true,
